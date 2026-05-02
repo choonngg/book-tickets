@@ -2,6 +2,7 @@ HELP.md
 AGENTS.md
 docs/
 .worktrees/
+.gradle-user-home/
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
