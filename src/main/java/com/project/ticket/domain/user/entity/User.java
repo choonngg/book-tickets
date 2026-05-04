@@ -8,7 +8,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(name = "users")
 public class User {
@@ -48,23 +50,4 @@ public class User {
         return user;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public UserRole getRole() {
-        return role;
-    }
-
-    public String getProfileImage() {
-        return profileImage;
-    }
-
-    public boolean isDeleted() {
-        return deleted;
-    }
 }
