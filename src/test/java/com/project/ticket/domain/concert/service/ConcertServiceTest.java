@@ -29,9 +29,7 @@ class ConcertServiceTest {
 
     @Test
     void artistCreatesConcertWithSeats() {
-        step("아티스트 사용자를 생성한다.");
         User artist = userRepository.save(User.createArtist("Artist"));
-        step("2x3 좌석을 가진 콘서트 생성 요청을 준비한다.");
         var request = new ConcertCreateRequest(
                 "Spring Concert",
                 "Olympic Park",
@@ -43,15 +41,9 @@ class ConcertServiceTest {
                 100_000
         );
 
-        step("콘서트를 생성한다.");
         var response = concertService.createConcert(artist.getId(), request);
 
-        step("콘서트 제목과 자동 생성된 좌석 수를 검증한다.");
         assertThat(response.title()).isEqualTo("Spring Concert");
         assertThat(seatRepository.findByConcertId(response.concertId())).hasSize(6);
-    }
-
-    private void step(String message) {
-        System.out.println("[TEST STEP] " + message);
     }
 }
