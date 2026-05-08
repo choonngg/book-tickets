@@ -52,12 +52,16 @@ class TicketPurchaseConcurrencyTest {
     @ParameterizedTest
     @EnumSource(PurchaseStrategy.class)
     void sameSeatConcurrentPurchaseCreatesOnlyOneTicket(PurchaseStrategy strategy) throws Exception {
+        step("구매 전략을 " + strategy + "로 설정한다.");
         properties.setPurchaseStrategy(strategy);
+        step("동시 구매에 사용할 구매자와 단일 좌석을 준비한다.");
         Long fanId = createFan();
         Long seatId = createConcertSeat();
 
+        step(REQUEST_COUNT + "개의 동일 좌석 구매 요청을 동시에 실행한다.");
         long successCount = executeConcurrentPurchases(fanId, seatId);
 
+        step("성공 요청 수와 실제 발급 티켓 수가 각각 1개인지 검증한다.");
         assertThat(successCount).isEqualTo(1);
         assertThat(ticketRepository.countBySeatId(seatId)).isEqualTo(1);
     }
@@ -113,5 +117,9 @@ class TicketPurchaseConcurrencyTest {
         );
         Long concertId = concertService.createConcert(artist.getId(), request).concertId();
         return seatRepository.findByConcertId(concertId).getFirst().getId();
+    }
+
+    private void step(String message) {
+        System.out.println("[TEST STEP] " + message);
     }
 }

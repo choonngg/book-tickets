@@ -34,10 +34,13 @@ class SeatServiceTest {
 
     @Test
     void findsAllSeatsForConcert() {
+        step("조회 대상 콘서트와 좌석을 생성한다.");
         Long concertId = createConcert();
 
+        step("콘서트의 전체 좌석을 조회한다.");
         var seats = seatService.findSeats(concertId);
 
+        step("전체 좌석 수와 대표 좌석 정보를 검증한다.");
         assertThat(seats).hasSize(4);
         assertThat(seats)
                 .extracting("section", "row", "col", "price", "status")
@@ -49,12 +52,16 @@ class SeatServiceTest {
 
     @Test
     void findsOnlyAvailableSeatsForConcert() {
+        step("조회 대상 콘서트와 좌석을 생성한다.");
         Long concertId = createConcert();
+        step("좌석 하나를 HELD 상태로 변경한다.");
         var heldSeat = seatRepository.findByConcertId(concertId).getFirst();
         heldSeat.hold();
 
+        step("예매 가능한 좌석만 조회한다.");
         var seats = seatService.findAvailableSeats(concertId);
 
+        step("HELD 좌석이 제외되고 AVAILABLE 좌석만 남았는지 검증한다.");
         assertThat(seats).hasSize(3);
         assertThat(seats).allMatch(seat -> seat.status() == SeatStatus.AVAILABLE);
     }
@@ -72,5 +79,9 @@ class SeatServiceTest {
                 50_000
         );
         return concertService.createConcert(artist.getId(), request).concertId();
+    }
+
+    private void step(String message) {
+        System.out.println("[TEST STEP] " + message);
     }
 }
