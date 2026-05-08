@@ -15,8 +15,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
 @Table(
         name = "ticket",
@@ -58,27 +61,4 @@ public class Ticket {
         return ticket;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public Seat getSeat() {
-        return seat;
-    }
-
-    public Long getPaymentId() {
-        return paymentId;
-    }
-
-    public TicketStatus getStatus() {
-        return status;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
 }

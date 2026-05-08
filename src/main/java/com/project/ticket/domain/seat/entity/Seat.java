@@ -16,7 +16,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Version;
+import lombok.Getter;
 
+@Getter
 @Entity
 @Table(
         name = "seat",
@@ -87,35 +89,4 @@ public class Seat {
         status = SeatStatus.AVAILABLE;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Concert getConcert() {
-        return concert;
-    }
-
-    public String getSection() {
-        return section;
-    }
-
-    public int getRow() {
-        return row;
-    }
-
-    public int getCol() {
-        return col;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public SeatStatus getStatus() {
-        return status;
-    }
-
-    public Long getVersion() {
-        return version;
-    }
 }

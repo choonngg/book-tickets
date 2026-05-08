@@ -12,8 +12,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
 @Table(name = "concert")
 public class Concert {
@@ -66,35 +69,4 @@ public class Concert {
         return concert;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public User getArtist() {
-        return artist;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getVenue() {
-        return venue;
-    }
-
-    public LocalDateTime getConcertDate() {
-        return concertDate;
-    }
-
-    public LocalDateTime getTicketOpenDate() {
-        return ticketOpenDate;
-    }
-
-    public LocalDateTime getTicketCloseDate() {
-        return ticketCloseDate;
-    }
-
-    public ConcertStatus getStatus() {
-        return status;
-    }
 }
