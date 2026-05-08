@@ -54,6 +54,20 @@ public class ConcertService {
         return ConcertResponse.from(concert);
     }
 
+    @Transactional(readOnly = true)
+    public List<ConcertResponse> findConcerts() {
+        return concertRepository.findAll().stream()
+                .map(ConcertResponse::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public ConcertResponse findConcert(Long concertId) {
+        Concert concert = concertRepository.findById(concertId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CONCERT_NOT_FOUND));
+        return ConcertResponse.from(concert);
+    }
+
     private List<Seat> createSeats(Concert concert, ConcertCreateRequest request) {
         List<Seat> seats = new ArrayList<>();
         for (int row = 1; row <= request.rowCount(); row++) {

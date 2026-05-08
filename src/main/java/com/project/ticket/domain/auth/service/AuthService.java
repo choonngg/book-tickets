@@ -8,6 +8,7 @@ import com.project.ticket.domain.auth.dto.TokenRefreshResponse;
 import com.project.ticket.domain.auth.entity.Login;
 import com.project.ticket.domain.auth.repository.LoginRepository;
 import com.project.ticket.domain.user.entity.User;
+import com.project.ticket.domain.user.entity.UserRole;
 import com.project.ticket.domain.user.repository.UserRepository;
 import com.project.ticket.global.auth.JwtProvider;
 import com.project.ticket.global.exception.BusinessException;
@@ -43,13 +44,20 @@ public class AuthService {
         if (loginRepository.existsByEmail(request.email())) {
             throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
         }
-        User user = userRepository.save(User.createFan(request.name()));
+        User user = userRepository.save(createUser(request.name(), request.roleOrDefault()));
         Login login = loginRepository.save(Login.email(
                 user,
                 request.email(),
                 passwordEncoder.encode(request.password())
         ));
         return SignupResponse.from(login);
+    }
+
+    private User createUser(String name, UserRole role) {
+        if (role == UserRole.ARTIST) {
+            return User.createArtist(name);
+        }
+        return User.createFan(name);
     }
 
     @Transactional(readOnly = true)
