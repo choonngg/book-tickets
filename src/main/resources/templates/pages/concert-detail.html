@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공연 상세 | Ticket</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<header class="app-header">
+    <a class="brand" th:href="@{/concerts}">Ticket</a>
+    <nav class="nav">
+        <a th:href="@{/concerts}">공연</a>
+        <a th:href="@{/tickets/me}">내 티켓</a>
+    </nav>
+</header>
+<main class="page">
+    <section class="page-header">
+        <h1>공연 상세</h1>
+        <p th:text="'공연 ID ' + ${concertId}">공연 ID</p>
+    </section>
+    <section class="seat-preview">
+        <button type="button">A-1</button>
+        <button type="button">A-2</button>
+        <button type="button" disabled>SOLD</button>
+    </section>
+</main>
+</body>
+</html>
