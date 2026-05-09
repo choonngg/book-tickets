@@ -28,8 +28,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/signup", "/auth/login", "/actuator/health").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/concerts/**").permitAll()
+                        .requestMatchers("/api/auth/signup", "/api/auth/login", "/actuator/health").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/concerts/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

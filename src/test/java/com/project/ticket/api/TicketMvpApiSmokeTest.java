@@ -47,14 +47,14 @@ class TicketMvpApiSmokeTest {
 
     @Test
     void concertCreationRequiresAuthentication() throws Exception {
-        mockMvc.perform(post("/concerts")
+        mockMvc.perform(post("/api/concerts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(concertCreateJson()))
                 .andExpect(status().isForbidden());
     }
 
     private void signup(String email, String name, String role) throws Exception {
-        mockMvc.perform(post("/auth/signup")
+        mockMvc.perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json(Map.of(
                                 "email", email,
@@ -66,7 +66,7 @@ class TicketMvpApiSmokeTest {
     }
 
     private String login(String email) throws Exception {
-        String response = mockMvc.perform(post("/auth/login")
+        String response = mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json(Map.of(
                                 "email", email,
@@ -80,7 +80,7 @@ class TicketMvpApiSmokeTest {
     }
 
     private Long createConcert(String artistToken) throws Exception {
-        String response = mockMvc.perform(post("/concerts")
+        String response = mockMvc.perform(post("/api/concerts")
                         .header("Authorization", bearer(artistToken))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(concertCreateJson()))
@@ -92,7 +92,7 @@ class TicketMvpApiSmokeTest {
     }
 
     private Long firstSeatId(Long concertId) throws Exception {
-        String response = mockMvc.perform(get("/concerts/{concertId}/seats", concertId))
+        String response = mockMvc.perform(get("/api/concerts/{concertId}/seats", concertId))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -103,7 +103,7 @@ class TicketMvpApiSmokeTest {
     }
 
     private JsonNode purchaseTicket(String fanToken, Long seatId) throws Exception {
-        String response = mockMvc.perform(post("/tickets")
+        String response = mockMvc.perform(post("/api/tickets")
                         .header("Authorization", bearer(fanToken))
                         .header("Idempotency-Key", "smoke-ticket-1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -116,7 +116,7 @@ class TicketMvpApiSmokeTest {
     }
 
     private JsonNode myTickets(String fanToken) throws Exception {
-        String response = mockMvc.perform(get("/tickets/me")
+        String response = mockMvc.perform(get("/api/tickets/me")
                         .header("Authorization", bearer(fanToken)))
                 .andExpect(status().isOk())
                 .andReturn()
