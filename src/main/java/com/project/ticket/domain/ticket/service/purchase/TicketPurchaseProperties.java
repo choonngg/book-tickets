@@ -1,18 +1,15 @@
 package com.project.ticket.domain.ticket.service.purchase;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+@Getter
+@Setter
 @Component
 @ConfigurationProperties(prefix = "ticket")
 public class TicketPurchaseProperties {
     private PurchaseStrategy purchaseStrategy = PurchaseStrategy.DISTRIBUTED;
 
-    public PurchaseStrategy getPurchaseStrategy() {
-        return purchaseStrategy;
-    }
-
-    public void setPurchaseStrategy(PurchaseStrategy purchaseStrategy) {
-        this.purchaseStrategy = purchaseStrategy;
-    }
 }
