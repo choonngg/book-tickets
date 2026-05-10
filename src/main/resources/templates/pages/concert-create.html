@@ -20,14 +20,14 @@
     </section>
     <p class="alert" th:if="${errorMessage}" th:text="${errorMessage}"></p>
     <form class="panel grid-form" method="post" th:action="@{/concerts}">
-        <label>공연명<input type="text" name="title"></label>
-        <label>장소<input type="text" name="venue"></label>
-        <label>공연일<input type="datetime-local" name="concertDate"></label>
-        <label>예매 시작<input type="datetime-local" name="ticketOpenDate"></label>
-        <label>예매 종료<input type="datetime-local" name="ticketCloseDate"></label>
-        <label>행 수<input type="number" name="rowCount" min="1" value="1"></label>
-        <label>열 수<input type="number" name="colCount" min="1" value="2"></label>
-        <label>가격<input type="number" name="price" min="0" value="10000"></label>
+        <label>공연명<input type="text" name="title" th:value="${form.title()}"></label>
+        <label>장소<input type="text" name="venue" th:value="${form.venue()}"></label>
+        <label>공연일<input type="datetime-local" name="concertDate" th:value="${form.concertDate()}"></label>
+        <label>예매 시작<input type="datetime-local" name="ticketOpenDate" th:value="${form.ticketOpenDate()}"></label>
+        <label>예매 종료<input type="datetime-local" name="ticketCloseDate" th:value="${form.ticketCloseDate()}"></label>
+        <label>행 수<input type="number" name="rowCount" min="1" th:value="${form.rowCount()}"></label>
+        <label>열 수<input type="number" name="colCount" min="1" th:value="${form.colCount()}"></label>
+        <label>가격<input type="number" name="price" min="0" th:value="${form.price()}"></label>
         <button type="submit">공연 생성</button>
     </form>
 </main>

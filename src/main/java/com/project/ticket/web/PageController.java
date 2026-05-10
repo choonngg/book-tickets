@@ -15,9 +15,12 @@ import com.project.ticket.web.form.ConcertCreateForm;
 import com.project.ticket.web.form.LoginForm;
 import com.project.ticket.web.form.SignupForm;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import java.util.UUID;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -64,10 +67,16 @@ public class PageController {
 
     @PostMapping("/login")
     public String login(
-            @ModelAttribute LoginForm form,
+            @Valid @ModelAttribute("form") LoginForm form,
+            BindingResult bindingResult,
             HttpSession session,
             Model model
     ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("pageTitle", "로그인");
+            model.addAttribute("errorMessage", validationMessage(bindingResult));
+            return "pages/login";
+        }
         try {
             LoginResponse response = authService.login(form.toRequest());
             AuthenticatedUser user = jwtProvider.parse(response.accessToken());
@@ -97,9 +106,15 @@ public class PageController {
 
     @PostMapping("/signup")
     public String signup(
-            @ModelAttribute SignupForm form,
+            @Valid @ModelAttribute("form") SignupForm form,
+            BindingResult bindingResult,
             Model model
     ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("pageTitle", "회원가입");
+            model.addAttribute("errorMessage", validationMessage(bindingResult));
+            return "pages/signup";
+        }
         try {
             authService.signup(form.toRequest());
             return "redirect:/login";
@@ -125,19 +140,28 @@ public class PageController {
             return "redirect:/login";
         }
         model.addAttribute("pageTitle", "공연 생성");
+        model.addAttribute("form", new ConcertCreateForm("", "", null, null, null, 1, 2, 10000));
         addSession(model, session);
         return "pages/concert-create";
     }
 
     @PostMapping("/concerts")
     public String createConcert(
-            @ModelAttribute ConcertCreateForm form,
+            @Valid @ModelAttribute("form") ConcertCreateForm form,
+            BindingResult bindingResult,
             HttpSession session,
+            Model model,
             RedirectAttributes redirectAttributes
     ) {
         Long userId = userId(session);
         if (userId == null || !isArtist(session)) {
             return "redirect:/login";
+        }
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("pageTitle", "공연 생성");
+            model.addAttribute("errorMessage", validationMessage(bindingResult));
+            addSession(model, session);
+            return "pages/concert-create";
         }
         try {
             ConcertResponse response = concertService.createConcert(userId, form.toRequest());
@@ -203,5 +227,12 @@ public class PageController {
 
     private boolean isArtist(HttpSession session) {
         return session.getAttribute(SESSION_USER_ROLE) == UserRole.ARTIST;
+    }
+
+    private String validationMessage(BindingResult bindingResult) {
+        return bindingResult.getAllErrors().stream()
+                .findFirst()
+                .map(ObjectError::getDefaultMessage)
+                .orElse("입력값을 확인해주세요.");
     }
 }
