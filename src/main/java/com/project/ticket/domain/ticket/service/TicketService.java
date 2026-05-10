@@ -2,6 +2,7 @@ package com.project.ticket.domain.ticket.service;
 
 import com.project.ticket.domain.ticket.dto.TicketPurchaseRequest;
 import com.project.ticket.domain.ticket.dto.TicketPurchaseResponse;
+import com.project.ticket.domain.ticket.dto.TicketViewResponse;
 import com.project.ticket.domain.ticket.repository.TicketRepository;
 import com.project.ticket.domain.ticket.service.purchase.TicketPurchaseStrategyRouter;
 import com.project.ticket.global.exception.BusinessException;
@@ -50,6 +51,13 @@ public class TicketService {
     public List<TicketPurchaseResponse> findMyTickets(Long userId) {
         return ticketRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(TicketPurchaseResponse::from)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<TicketViewResponse> findMyTicketViews(Long userId) {
+        return ticketRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
+                .map(TicketViewResponse::from)
                 .toList();
     }
 }

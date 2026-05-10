@@ -36,7 +36,9 @@ public class SecurityConfig {
                                 "/signup",
                                 "/concerts",
                                 "/concerts/**",
+                                "/tickets",
                                 "/tickets/me",
+                                "/logout",
                                 "/css/**"
                         ).permitAll()
                         .anyRequest().authenticated()

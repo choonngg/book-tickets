@@ -3,6 +3,7 @@ package com.project.ticket.web;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
@@ -41,23 +42,22 @@ class PageControllerTest {
     }
 
     @Test
-    void concertCreatePageRenders() throws Exception {
+    void concertCreatePageRequiresLogin() throws Exception {
         mockMvc.perform(get("/concerts/new"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("공연 생성")));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login"));
     }
 
     @Test
-    void concertDetailPageRenders() throws Exception {
+    void concertDetailPageReturnsNotFoundWhenConcertDoesNotExist() throws Exception {
         mockMvc.perform(get("/concerts/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("공연 상세")));
+                .andExpect(status().isNotFound());
     }
 
     @Test
-    void myTicketsPageRenders() throws Exception {
+    void myTicketsPageRequiresLogin() throws Exception {
         mockMvc.perform(get("/tickets/me"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString("내 티켓")));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login"));
     }
 }

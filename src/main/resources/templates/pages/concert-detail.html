@@ -17,12 +17,16 @@
 <main class="page">
     <section class="page-header">
         <h1>공연 상세</h1>
-        <p th:text="'공연 ID ' + ${concertId}">공연 ID</p>
+        <p th:text="${concert.title()}">공연명</p>
     </section>
-    <section class="seat-preview">
-        <button type="button">A-1</button>
-        <button type="button">A-2</button>
-        <button type="button" disabled>SOLD</button>
+    <p class="alert" th:if="${errorMessage}" th:text="${errorMessage}"></p>
+    <section class="seat-preview" th:if="${!#lists.isEmpty(seats)}">
+        <form th:each="seat : ${seats}" method="post" th:action="@{/tickets}">
+            <input type="hidden" name="seatId" th:value="${seat.seatId()}">
+            <button type="submit"
+                    th:disabled="${seat.status().name() != 'AVAILABLE'}"
+                    th:text="${seat.section()} + '-' + ${seat.row()} + ' / ' + ${seat.status()}">A-1</button>
+        </form>
     </section>
 </main>
 </body>

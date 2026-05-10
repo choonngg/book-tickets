@@ -18,9 +18,26 @@
     <section class="page-header">
         <h1>내 티켓</h1>
     </section>
-    <section class="empty-state">
+    <p class="alert" th:if="${errorMessage}" th:text="${errorMessage}"></p>
+    <section class="empty-state" th:if="${#lists.isEmpty(tickets)}">
         <strong>구매한 티켓이 없습니다.</strong>
     </section>
+    <table class="data-table" th:unless="${#lists.isEmpty(tickets)}">
+        <thead>
+        <tr>
+            <th>공연명</th>
+            <th>좌석</th>
+            <th>상태</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="ticket : ${tickets}">
+            <td th:text="${ticket.concertTitle()}">공연명</td>
+            <td th:text="${ticket.section()} + '-' + ${ticket.row()} + '-' + ${ticket.col()}">좌석</td>
+            <td th:text="${ticket.status()}">COMPLETED</td>
+        </tr>
+        </tbody>
+    </table>
 </main>
 </body>
 </html>
