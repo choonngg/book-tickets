@@ -1,0 +1,598 @@
+:root {
+  color: #17201d;
+  background: #f4f1ec;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button,
+.text-button,
+.brand {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+button,
+.text-button {
+  border: 0;
+  border-radius: 7px;
+  background: #106b5d;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 800;
+  min-height: 42px;
+  padding: 0 15px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+button:hover:not(:disabled),
+.text-button:hover {
+  background: #0a564b;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 100vh;
+  padding: 22px;
+}
+
+.site-header {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #ddd5c9;
+  border-radius: 8px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: auto 1fr auto;
+  padding: 12px 14px;
+  position: sticky;
+  top: 12px;
+  z-index: 5;
+}
+
+.brand {
+  background: transparent;
+  border: 0;
+  color: #10231f;
+  cursor: pointer;
+  font-size: 1.05rem;
+  font-weight: 950;
+  padding: 0;
+}
+
+.main-nav {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.main-nav button {
+  background: transparent;
+  color: #5c6763;
+  min-height: 36px;
+  padding: 0 12px;
+}
+
+.main-nav button.active,
+.main-nav button:hover {
+  background: #e7efeb;
+  color: #106b5d;
+}
+
+.header-actions {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.login-state {
+  background: #eee7de;
+  border-radius: 999px;
+  color: #5f6763;
+  font-size: 0.84rem;
+  font-weight: 800;
+  padding: 8px 11px;
+}
+
+.login-state.active {
+  background: #dff3eb;
+  color: #106b5d;
+}
+
+.hero-section {
+  background:
+    linear-gradient(120deg, rgba(10, 28, 38, 0.84), rgba(16, 107, 93, 0.7)),
+    url("https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=1800&q=80");
+  background-position: center;
+  background-size: cover;
+  border-radius: 8px;
+  color: #ffffff;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 430px);
+  min-height: 330px;
+  padding: 38px;
+}
+
+.hero-copy {
+  align-self: center;
+  max-width: 680px;
+}
+
+.eyebrow {
+  color: #7c8a85;
+  font-size: 0.76rem;
+  font-weight: 950;
+  letter-spacing: 0;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+}
+
+.hero-section .eyebrow {
+  color: #b7eee2;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(2.1rem, 4vw, 4.6rem);
+  line-height: 1.02;
+}
+
+h2 {
+  font-size: 1.35rem;
+}
+
+h3 {
+  font-size: 1.08rem;
+}
+
+.hero-copy > p:last-of-type {
+  color: #e1f3ee;
+  font-size: 1.05rem;
+  margin-top: 12px;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.secondary-button {
+  background: #263238;
+}
+
+.secondary-button:hover:not(:disabled) {
+  background: #172025;
+}
+
+.hero-panel {
+  align-self: end;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+}
+
+.hero-panel span {
+  color: #bfddd6;
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.hero-panel strong {
+  font-size: 1.35rem;
+}
+
+.hero-panel p {
+  color: #e0efeb;
+}
+
+.booking-layout {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 440px);
+}
+
+.concert-section,
+.booking-panel,
+.page-panel,
+.auth-card,
+.message-card {
+  background: #ffffff;
+  border: 1px solid #ddd5c9;
+  border-radius: 8px;
+  box-shadow: 0 12px 28px rgba(31, 39, 35, 0.07);
+}
+
+.concert-section,
+.booking-panel,
+.page-panel {
+  padding: 20px;
+}
+
+.section-heading {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.section-heading > span {
+  background: #f0ebe4;
+  border-radius: 999px;
+  color: #5d6863;
+  font-size: 0.82rem;
+  font-weight: 900;
+  padding: 8px 11px;
+  white-space: nowrap;
+}
+
+.section-heading.compact {
+  margin-bottom: 14px;
+}
+
+.concert-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.concert-card {
+  border: 1px solid #e1d9cf;
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 112px minmax(0, 1fr);
+  min-width: 0;
+  padding: 12px;
+}
+
+.concert-card.selected {
+  border-color: #106b5d;
+  box-shadow: 0 0 0 3px rgba(16, 107, 93, 0.12);
+}
+
+.poster-block {
+  align-items: center;
+  aspect-ratio: 3 / 4;
+  background:
+    linear-gradient(150deg, rgba(16, 107, 93, 0.82), rgba(16, 35, 31, 0.9)),
+    #10231f;
+  border-radius: 7px;
+  color: #d7fff4;
+  display: flex;
+  justify-content: center;
+}
+
+.concert-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.concert-info p {
+  align-items: center;
+  color: #66716d;
+  display: flex;
+  font-size: 0.9rem;
+  gap: 6px;
+}
+
+.concert-info button {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+.status-pill {
+  align-self: flex-start;
+  background: #e6f4ee;
+  border-radius: 999px;
+  color: #106b5d;
+  font-size: 0.74rem;
+  font-weight: 950;
+  padding: 5px 8px;
+}
+
+.selected-concert {
+  background: #f5f1eb;
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  margin-bottom: 14px;
+  padding: 13px;
+}
+
+.selected-concert span {
+  color: #66716d;
+  font-size: 0.88rem;
+}
+
+.seat-map {
+  display: grid;
+  gap: 7px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  max-height: 310px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.seat-button {
+  background: #edf4f1;
+  color: #17574d;
+  flex-direction: column;
+  gap: 1px;
+  min-height: 48px;
+  padding: 6px;
+}
+
+.seat-button small {
+  font-size: 0.68rem;
+  font-weight: 750;
+}
+
+.seat-button.selected {
+  background: #106b5d;
+  color: #ffffff;
+}
+
+.purchase-summary {
+  border-top: 1px solid #e7dfd5;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 16px;
+  padding-top: 14px;
+}
+
+.purchase-summary span {
+  color: #707a76;
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 900;
+  margin-bottom: 4px;
+}
+
+.wide-button {
+  margin-top: 12px;
+  width: 100%;
+}
+
+.empty-state {
+  align-items: center;
+  background: #f7f3ee;
+  border: 1px dashed #d6ccbf;
+  border-radius: 8px;
+  color: #65706b;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  grid-column: 1 / -1;
+  justify-content: center;
+  min-height: 220px;
+  padding: 24px;
+  text-align: center;
+}
+
+.empty-state strong {
+  color: #26332f;
+}
+
+.empty-state.small {
+  min-height: 260px;
+}
+
+.empty-copy {
+  color: #66716d;
+  grid-column: 1 / -1;
+  padding: 10px;
+}
+
+.ticket-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ticket-card {
+  background: #10231f;
+  border-radius: 8px;
+  color: #ffffff;
+  display: grid;
+  gap: 8px;
+  min-height: 150px;
+  padding: 18px;
+}
+
+.ticket-card span,
+.ticket-card p {
+  color: #beddd5;
+}
+
+.manage-form,
+.auth-card {
+  display: grid;
+  gap: 12px;
+}
+
+.manage-form {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.manage-form button {
+  align-self: end;
+}
+
+label {
+  color: #43504c;
+  display: flex;
+  flex-direction: column;
+  font-size: 0.82rem;
+  font-weight: 900;
+  gap: 5px;
+}
+
+input,
+select {
+  background: #fbfaf8;
+  border: 1px solid #cfc6ba;
+  border-radius: 7px;
+  color: #17201d;
+  min-height: 40px;
+  min-width: 0;
+  padding: 8px 10px;
+  width: 100%;
+}
+
+input:focus,
+select:focus {
+  border-color: #106b5d;
+  box-shadow: 0 0 0 3px rgba(16, 107, 93, 0.14);
+  outline: none;
+}
+
+.auth-and-message {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 440px);
+}
+
+.auth-card,
+.message-card {
+  padding: 18px;
+}
+
+.auth-card {
+  grid-template-columns: 150px repeat(4, minmax(130px, 1fr));
+}
+
+.auth-card > div:first-child {
+  align-self: end;
+}
+
+.auth-actions {
+  align-items: end;
+  display: flex;
+  gap: 8px;
+  grid-column: 1 / -1;
+  justify-content: flex-start;
+}
+
+.auth-actions button {
+  min-width: 118px;
+}
+
+.message-card {
+  align-content: center;
+  display: grid;
+  gap: 8px;
+}
+
+.message-card span {
+  color: #106b5d;
+  font-size: 0.8rem;
+  font-weight: 950;
+}
+
+.message-card p {
+  color: #26332f;
+  font-weight: 850;
+}
+
+@media (max-width: 1180px) {
+  .booking-layout,
+  .auth-and-message {
+    grid-template-columns: 1fr;
+  }
+
+  .concert-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-card,
+  .manage-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    padding: 12px;
+  }
+
+  .site-header {
+    position: static;
+    grid-template-columns: 1fr;
+  }
+
+  .main-nav,
+  .header-actions,
+  .hero-actions {
+    justify-content: flex-start;
+  }
+
+  .hero-section {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding: 24px;
+  }
+
+  .concert-card {
+    grid-template-columns: 88px minmax(0, 1fr);
+  }
+
+  .seat-map {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .ticket-grid,
+  .auth-card,
+  .manage-form,
+  .purchase-summary {
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+  }
+}

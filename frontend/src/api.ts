@@ -1,0 +1,100 @@
+import type {
+  ConcertCreateRequest,
+  ConcertResponse,
+  LoginRequest,
+  LoginResponse,
+  SeatResponse,
+  SignupRequest,
+  SignupResponse,
+  TicketPurchaseResponse,
+  UserResponse,
+} from './types';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
+
+interface RequestOptions extends RequestInit {
+  accessToken?: string;
+  idempotencyKey?: string;
+}
+
+async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const headers = new Headers(options.headers);
+  headers.set('Accept', 'application/json');
+
+  if (options.body && !headers.has('Content-Type')) {
+    headers.set('Content-Type', 'application/json');
+  }
+
+  if (options.accessToken) {
+    headers.set('Authorization', `Bearer ${options.accessToken}`);
+  }
+
+  if (options.idempotencyKey) {
+    headers.set('Idempotency-Key', options.idempotencyKey);
+  }
+
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    ...options,
+    headers,
+  });
+
+  if (!response.ok) {
+    const message = await readErrorMessage(response);
+    throw new Error(message);
+  }
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  return response.json() as Promise<T>;
+}
+
+async function readErrorMessage(response: Response): Promise<string> {
+  const fallback = `${response.status} ${response.statusText}`;
+
+  try {
+    const body = await response.json();
+    return body.message ?? body.error ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+export const api = {
+  signup: (body: SignupRequest) =>
+    request<SignupResponse>('/api/auth/signup', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+  login: (body: LoginRequest) =>
+    request<LoginResponse>('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
+  me: (accessToken: string) => request<UserResponse>('/api/users/me', { accessToken }),
+  logout: (refreshToken: string) =>
+    request<void>('/api/auth/logout', {
+      method: 'POST',
+      body: JSON.stringify({ refreshToken }),
+    }),
+  findConcerts: () => request<ConcertResponse[]>('/api/concerts'),
+  createConcert: (accessToken: string, body: ConcertCreateRequest) =>
+    request<ConcertResponse>('/api/concerts', {
+      method: 'POST',
+      accessToken,
+      body: JSON.stringify(body),
+    }),
+  findSeats: (concertId: number) => request<SeatResponse[]>(`/api/concerts/${concertId}/seats`),
+  findAvailableSeats: (concertId: number) =>
+    request<SeatResponse[]>(`/api/concerts/${concertId}/seats/available`),
+  purchaseTicket: (accessToken: string, seatId: number, idempotencyKey: string) =>
+    request<TicketPurchaseResponse>('/api/tickets', {
+      method: 'POST',
+      accessToken,
+      idempotencyKey,
+      body: JSON.stringify({ seatId }),
+    }),
+  findMyTickets: (accessToken: string) =>
+    request<TicketPurchaseResponse[]>('/api/tickets/me', { accessToken }),
+};
