@@ -30,17 +30,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/signup", "/api/auth/login", "/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/concerts/**").permitAll()
-                        .requestMatchers(
-                                "/",
-                                "/login",
-                                "/signup",
-                                "/concerts",
-                                "/concerts/**",
-                                "/tickets",
-                                "/tickets/me",
-                                "/logout",
-                                "/css/**"
-                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
