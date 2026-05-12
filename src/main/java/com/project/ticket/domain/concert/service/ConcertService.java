@@ -18,7 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ConcertService {
-    private static final String DEFAULT_SECTION = "A";
+    private static final List<String> DEFAULT_SECTIONS = List.of(
+            "A", "B",
+            "C", "D", "E", "F",
+            "G", "H", "I", "J"
+    );
+    private static final int DEFAULT_SECTION_ROW_COUNT = 50;
+    private static final int DEFAULT_SECTION_COL_COUNT = 30;
 
     private final ConcertRepository concertRepository;
     private final SeatRepository seatRepository;
@@ -70,9 +76,11 @@ public class ConcertService {
 
     private List<Seat> createSeats(Concert concert, ConcertCreateRequest request) {
         List<Seat> seats = new ArrayList<>();
-        for (int row = 1; row <= request.rowCount(); row++) {
-            for (int col = 1; col <= request.colCount(); col++) {
-                seats.add(Seat.create(concert, DEFAULT_SECTION, row, col, request.price()));
+        for (String section : DEFAULT_SECTIONS) {
+            for (int row = 1; row <= DEFAULT_SECTION_ROW_COUNT; row++) {
+                for (int col = 1; col <= DEFAULT_SECTION_COL_COUNT; col++) {
+                    seats.add(Seat.create(concert, section, row, col, request.price()));
+                }
             }
         }
         return seats;

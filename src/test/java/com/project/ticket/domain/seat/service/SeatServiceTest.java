@@ -38,12 +38,12 @@ class SeatServiceTest {
 
         var seats = seatService.findSeats(concertId);
 
-        assertThat(seats).hasSize(4);
+        assertThat(seats).hasSize(15_000);
         assertThat(seats)
                 .extracting("section", "row", "col", "price", "status")
                 .contains(
                         org.assertj.core.groups.Tuple.tuple("A", 1, 1, 50_000, SeatStatus.AVAILABLE),
-                        org.assertj.core.groups.Tuple.tuple("A", 2, 2, 50_000, SeatStatus.AVAILABLE)
+                        org.assertj.core.groups.Tuple.tuple("J", 50, 30, 50_000, SeatStatus.AVAILABLE)
                 );
     }
 
@@ -55,7 +55,7 @@ class SeatServiceTest {
 
         var seats = seatService.findAvailableSeats(concertId);
 
-        assertThat(seats).hasSize(3);
+        assertThat(seats).hasSize(14_999);
         assertThat(seats).allMatch(seat -> seat.status() == SeatStatus.AVAILABLE);
     }
 
@@ -67,8 +67,6 @@ class SeatServiceTest {
                 LocalDateTime.now().plusDays(30),
                 LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(29),
-                2,
-                2,
                 50_000
         );
         return concertService.createConcert(artist.getId(), request).concertId();

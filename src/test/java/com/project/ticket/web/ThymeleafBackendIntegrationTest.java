@@ -35,8 +35,6 @@ class ThymeleafBackendIntegrationTest {
                         .param("concertDate", "2026-06-01T20:00")
                         .param("ticketOpenDate", "2026-05-01T10:00")
                         .param("ticketCloseDate", "2026-05-31T23:59")
-                        .param("rowCount", "1")
-                        .param("colCount", "2")
                         .param("price", "10000"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("공연명을 입력해주세요.")));

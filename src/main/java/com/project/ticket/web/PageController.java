@@ -140,7 +140,7 @@ public class PageController {
             return "redirect:/login";
         }
         model.addAttribute("pageTitle", "공연 생성");
-        model.addAttribute("form", new ConcertCreateForm("", "", null, null, null, 1, 2, 10000));
+        model.addAttribute("form", new ConcertCreateForm("", "", null, null, null, 10000));
         addSession(model, session);
         return "pages/concert-create";
     }

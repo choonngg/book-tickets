@@ -25,8 +25,6 @@
         <label>공연일<input type="datetime-local" name="concertDate" th:value="${form.concertDate()}"></label>
         <label>예매 시작<input type="datetime-local" name="ticketOpenDate" th:value="${form.ticketOpenDate()}"></label>
         <label>예매 종료<input type="datetime-local" name="ticketCloseDate" th:value="${form.ticketCloseDate()}"></label>
-        <label>행 수<input type="number" name="rowCount" min="1" th:value="${form.rowCount()}"></label>
-        <label>열 수<input type="number" name="colCount" min="1" th:value="${form.colCount()}"></label>
         <label>가격<input type="number" name="price" min="0" th:value="${form.price()}"></label>
         <button type="submit">공연 생성</button>
     </form>

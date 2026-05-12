@@ -107,8 +107,6 @@ class TicketPurchaseConcurrencyTest {
                 LocalDateTime.now().plusDays(30),
                 LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(29),
-                1,
-                1,
                 100_000
         );
         Long concertId = concertService.createConcert(artist.getId(), request).concertId();

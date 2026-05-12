@@ -98,7 +98,7 @@ class TicketMvpApiSmokeTest {
                 .getResponse()
                 .getContentAsString();
         JsonNode seats = objectMapper.readTree(response);
-        assertThat(seats).hasSize(2);
+        assertThat(seats).hasSize(15_000);
         return seats.get(0).path("seatId").asLong();
     }
 
@@ -136,8 +136,6 @@ class TicketMvpApiSmokeTest {
                 "concertDate", LocalDateTime.now().plusDays(30).toString(),
                 "ticketOpenDate", LocalDateTime.now().minusDays(1).toString(),
                 "ticketCloseDate", LocalDateTime.now().plusDays(20).toString(),
-                "rowCount", 1,
-                "colCount", 2,
                 "price", 10000
         ));
     }
