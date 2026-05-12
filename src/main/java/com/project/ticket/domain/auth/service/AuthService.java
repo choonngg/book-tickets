@@ -45,7 +45,7 @@ public class AuthService {
             throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
         }
         User user = userRepository.save(createUser(request.name(), request.roleOrDefault()));
-        Login login = loginRepository.save(Login.email(
+        Login login = loginRepository.save(Login.create(
                 user,
                 request.email(),
                 passwordEncoder.encode(request.password())

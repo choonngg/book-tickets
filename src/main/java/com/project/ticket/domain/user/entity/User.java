@@ -25,9 +25,6 @@ public class User {
     @Column(nullable = false)
     private UserRole role;
 
-    @Column(length = 255)
-    private String profileImage;
-
     @Column(nullable = false)
     private boolean deleted;
 
