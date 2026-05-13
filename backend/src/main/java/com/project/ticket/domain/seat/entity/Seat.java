@@ -25,7 +25,7 @@ import lombok.Getter;
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "uq_seat_concert_location",
-                        columnNames = {"concert_id", "section", "row_number", "col_number"}
+                        columnNames = {"concert_id", "section", "seat_row", "seat_col"}
                 )
         }
 )
@@ -41,10 +41,10 @@ public class Seat {
     @Column(nullable = false, length = 20)
     private String section;
 
-    @Column(name = "row_number", nullable = false)
+    @Column(name = "seat_row", nullable = false)
     private int row;
 
-    @Column(name = "col_number", nullable = false)
+    @Column(name = "seat_col", nullable = false)
     private int col;
 
     @Column(nullable = false)
