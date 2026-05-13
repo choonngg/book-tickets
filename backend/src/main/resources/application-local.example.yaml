@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/ticket?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: your-local-mysql-password
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+jwt:
+  secret: replace-with-local-secret-key-at-least-32-bytes
+  access-token-minutes: 30
+  refresh-token-days: 7
+
+ticket:
+  purchase-strategy: distributed
+
+payment:
+  timeout-millis: 5000

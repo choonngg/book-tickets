@@ -8,6 +8,11 @@ build/
 node_modules/
 frontend/dist/
 frontend/node_modules/
+backend/src/main/resources/application-local.yaml
+backend/src/main/resources/application-*.local.yaml
+.env
+.env.*
+!.env.example
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
