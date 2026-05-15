@@ -3,6 +3,7 @@ package com.project.ticket.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -51,6 +52,52 @@ class TicketMvpApiSmokeTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(concertCreateJson()))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void seatAvailabilitySummaryReturnsSectionCountsWithoutFullSeatList() throws Exception {
+        signup("artist-availability-summary@example.com", "Artist", "ARTIST");
+        String artistToken = login("artist-availability-summary@example.com");
+        Long concertId = createConcert(artistToken);
+
+        String response = mockMvc.perform(get("/api/concerts/{concertId}/seats/availability", concertId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.totalAvailable").value(15_000))
+                .andExpect(jsonPath("$.sections.length()").value(10))
+                .andExpect(jsonPath("$.sections[0].section").value("A"))
+                .andExpect(jsonPath("$.sections[0].availableCount").value(1_500))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertThat(response).doesNotContain("seatId");
+    }
+
+    @Test
+    void seatAvailabilitySectionReturnsOnlySelectedSectionSeats() throws Exception {
+        signup("artist-availability-section@example.com", "Artist", "ARTIST");
+        String artistToken = login("artist-availability-section@example.com");
+        Long concertId = createConcert(artistToken);
+
+        String response = mockMvc.perform(get(
+                        "/api/concerts/{concertId}/seats/availability/sections/{section}",
+                        concertId,
+                        "A"
+                ))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.section").value("A"))
+                .andExpect(jsonPath("$.availableCount").value(1_500))
+                .andExpect(jsonPath("$.seats.length()").value(1_500))
+                .andExpect(jsonPath("$.seats[0].seatId").isNumber())
+                .andExpect(jsonPath("$.seats[0].row").value(1))
+                .andExpect(jsonPath("$.seats[0].col").value(1))
+                .andExpect(jsonPath("$.seats[0].price").value(10_000))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        assertThat(response).doesNotContain("concertId");
+        assertThat(response).doesNotContain("status");
     }
 
     private void signup(String email, String name, String role) throws Exception {

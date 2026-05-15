@@ -59,6 +59,44 @@ class SeatServiceTest {
         assertThat(seats).allMatch(seat -> seat.status() == SeatStatus.AVAILABLE);
     }
 
+    @Test
+    void findsAvailableSeatCountsBySection() {
+        Long concertId = createConcert();
+        var seats = seatRepository.findByConcertId(concertId);
+        seats.getFirst().hold();
+
+        var response = seatService.findAvailabilitySummary(concertId);
+
+        assertThat(response.totalAvailable()).isEqualTo(14_999);
+        assertThat(response.sections()).hasSize(10);
+        assertThat(response.sections())
+                .extracting("section", "availableCount")
+                .contains(
+                        org.assertj.core.groups.Tuple.tuple("A", 1_499L),
+                        org.assertj.core.groups.Tuple.tuple("J", 1_500L)
+                );
+    }
+
+    @Test
+    void findsAvailableSeatsForSelectedSectionOnly() {
+        Long concertId = createConcert();
+        var seats = seatRepository.findByConcertId(concertId);
+        seats.getFirst().hold();
+
+        var response = seatService.findSectionAvailability(concertId, "A");
+
+        assertThat(response.section()).isEqualTo("A");
+        assertThat(response.availableCount()).isEqualTo(1_499);
+        assertThat(response.seats()).hasSize(1_499);
+        assertThat(response.seats())
+                .allSatisfy(seat -> {
+                    assertThat(seat.seatId()).isNotNull();
+                    assertThat(seat.row()).isPositive();
+                    assertThat(seat.col()).isPositive();
+                    assertThat(seat.price()).isEqualTo(50_000);
+                });
+    }
+
     private Long createConcert() {
         User artist = userRepository.save(User.createArtist("Artist"));
         var request = new ConcertCreateRequest(

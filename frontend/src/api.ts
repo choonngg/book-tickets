@@ -3,6 +3,8 @@ import type {
   ConcertResponse,
   LoginRequest,
   LoginResponse,
+  SeatAvailabilitySummaryResponse,
+  SeatSectionAvailabilityResponse,
   SeatResponse,
   SignupRequest,
   SignupResponse,
@@ -88,6 +90,12 @@ export const api = {
   findSeats: (concertId: number) => request<SeatResponse[]>(`/api/concerts/${concertId}/seats`),
   findAvailableSeats: (concertId: number) =>
     request<SeatResponse[]>(`/api/concerts/${concertId}/seats/available`),
+  findSeatAvailabilitySummary: (concertId: number) =>
+    request<SeatAvailabilitySummaryResponse>(`/api/concerts/${concertId}/seats/availability`),
+  findSeatSectionAvailability: (concertId: number, section: string) =>
+    request<SeatSectionAvailabilityResponse>(
+      `/api/concerts/${concertId}/seats/availability/sections/${encodeURIComponent(section)}`,
+    ),
   purchaseTicket: (accessToken: string, seatId: number, idempotencyKey: string) =>
     request<TicketPurchaseResponse>('/api/tickets', {
       method: 'POST',

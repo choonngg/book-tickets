@@ -60,6 +60,29 @@ export interface SeatResponse {
   status: string;
 }
 
+export interface SeatSectionSummaryResponse {
+  section: string;
+  availableCount: number;
+}
+
+export interface SeatAvailabilitySummaryResponse {
+  totalAvailable: number;
+  sections: SeatSectionSummaryResponse[];
+}
+
+export interface SeatSectionSeatResponse {
+  seatId: number;
+  row: number;
+  col: number;
+  price: number;
+}
+
+export interface SeatSectionAvailabilityResponse {
+  section: string;
+  availableCount: number;
+  seats: SeatSectionSeatResponse[];
+}
+
 export interface TicketPurchaseResponse {
   ticketId: number;
   userId: number;

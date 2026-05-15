@@ -19,7 +19,8 @@ import type {
   ConcertCreateRequest,
   ConcertResponse,
   LoginResponse,
-  SeatResponse,
+  SeatSectionSeatResponse,
+  SeatSectionSummaryResponse,
   SignupRequest,
   TicketPurchaseResponse,
   UserResponse,
@@ -52,7 +53,10 @@ function App() {
   const [me, setMe] = useState<UserResponse | null>(null);
   const [concerts, setConcerts] = useState<ConcertResponse[]>([]);
   const [selectedConcertId, setSelectedConcertId] = useState<number | null>(null);
-  const [seats, setSeats] = useState<SeatResponse[]>([]);
+  const [seatSections, setSeatSections] = useState<SeatSectionSummaryResponse[]>([]);
+  const [selectedSection, setSelectedSection] = useState<string | null>(null);
+  const [totalAvailableSeats, setTotalAvailableSeats] = useState(0);
+  const [seats, setSeats] = useState<SeatSectionSeatResponse[]>([]);
   const [selectedSeatId, setSelectedSeatId] = useState<number | null>(null);
   const [tickets, setTickets] = useState<TicketPurchaseResponse[]>([]);
   const [message, setMessage] = useState('원하는 공연을 선택하고 좌석을 예매해보세요.');
@@ -68,7 +72,6 @@ function App() {
     () => seats.find((seat) => seat.seatId === selectedSeatId) ?? null,
     [seats, selectedSeatId],
   );
-  const availableSeats = seats.filter((seat) => seat.status === 'AVAILABLE');
 
   useEffect(() => {
     if (!session) {
@@ -112,13 +115,37 @@ function App() {
   async function selectConcert(concert: ConcertResponse) {
     setSelectedConcertId(concert.concertId);
     setSelectedSeatId(null);
+    setSelectedSection(null);
+    setSeats([]);
+    setSeatSections([]);
+    setTotalAvailableSeats(0);
 
-    const result = await run(`${concert.title}의 예매 가능 좌석을 불러왔습니다.`, () =>
-      api.findAvailableSeats(concert.concertId),
+    const result = await run(`${concert.title}의 구역별 예매 가능 좌석을 불러왔습니다.`, () =>
+      api.findSeatAvailabilitySummary(concert.concertId),
     );
 
     if (result) {
-      setSeats(result.slice(0, 240));
+      setSeatSections(result.sections);
+      setTotalAvailableSeats(result.totalAvailable);
+    }
+  }
+
+  async function selectSection(section: string) {
+    if (!selectedConcert) {
+      return;
+    }
+
+    setSelectedSection(section);
+    setSelectedSeatId(null);
+    setSeats([]);
+
+    const result = await run(`${section}구역 좌석을 불러왔습니다.`, () =>
+      api.findSeatSectionAvailability(selectedConcert.concertId, section),
+    );
+
+    if (result) {
+      setSelectedSection(result.section);
+      setSeats(result.seats);
     }
   }
 
@@ -322,7 +349,7 @@ function App() {
                   <p className="eyebrow">SEATS</p>
                   <h2>좌석 선택</h2>
                 </div>
-                <span>{availableSeats.length}석</span>
+                <span>{totalAvailableSeats}석</span>
               </div>
               {selectedConcert ? (
                 <>
@@ -330,18 +357,38 @@ function App() {
                     <strong>{selectedConcert.title}</strong>
                     <span>{selectedConcert.venue}</span>
                   </div>
+                  <div className="section-picker" aria-label="좌석 구역">
+                    {seatSections.length === 0 ? (
+                      <p className="empty-copy">표시할 예매 가능 구역이 없습니다.</p>
+                    ) : (
+                      seatSections.map((section) => (
+                        <button
+                          className={section.section === selectedSection ? 'section-button selected' : 'section-button'}
+                          key={section.section}
+                          type="button"
+                          onClick={() => selectSection(section.section)}
+                          disabled={isBusy}
+                        >
+                          {section.section}
+                          <small>{section.availableCount}석</small>
+                        </button>
+                      ))
+                    )}
+                  </div>
                   <div className="seat-map" aria-label="예매 가능 좌석">
-                    {availableSeats.length === 0 ? (
+                    {!selectedSection ? (
+                      <p className="empty-copy">좌석을 보려면 구역을 선택하세요.</p>
+                    ) : seats.length === 0 ? (
                       <p className="empty-copy">표시할 예매 가능 좌석이 없습니다.</p>
                     ) : (
-                      availableSeats.slice(0, 120).map((seat) => (
+                      seats.map((seat) => (
                         <button
                           className={seat.seatId === selectedSeatId ? 'seat-button selected' : 'seat-button'}
                           key={seat.seatId}
                           type="button"
                           onClick={() => setSelectedSeatId(seat.seatId)}
                         >
-                          {seat.section}
+                          {selectedSection}
                           <small>
                             {seat.row}-{seat.col}
                           </small>
@@ -352,7 +399,11 @@ function App() {
                   <div className="purchase-summary">
                     <div>
                       <span>선택 좌석</span>
-                      <strong>{selectedSeat ? `${selectedSeat.section}구역 ${selectedSeat.row}행 ${selectedSeat.col}열` : '미선택'}</strong>
+                      <strong>
+                        {selectedSeat && selectedSection
+                          ? `${selectedSection}구역 ${selectedSeat.row}행 ${selectedSeat.col}열`
+                          : '미선택'}
+                      </strong>
                     </div>
                     <div>
                       <span>가격</span>

@@ -1,7 +1,10 @@
 package com.project.ticket.domain.seat.service;
 
 import com.project.ticket.domain.concert.repository.ConcertRepository;
+import com.project.ticket.domain.seat.dto.SeatAvailabilitySummaryResponse;
 import com.project.ticket.domain.seat.dto.SeatResponse;
+import com.project.ticket.domain.seat.dto.SeatSectionAvailabilityResponse;
+import com.project.ticket.domain.seat.dto.SeatSectionSeatResponse;
 import com.project.ticket.domain.seat.entity.SeatStatus;
 import com.project.ticket.domain.seat.repository.SeatRepository;
 import com.project.ticket.global.exception.BusinessException;
@@ -34,6 +37,32 @@ public class SeatService {
         return seatRepository.findByConcertIdAndStatus(concertId, SeatStatus.AVAILABLE).stream()
                 .map(SeatResponse::from)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public SeatAvailabilitySummaryResponse findAvailabilitySummary(Long concertId) {
+        verifyConcertExists(concertId);
+        long totalAvailable = seatRepository.countByConcertIdAndStatus(concertId, SeatStatus.AVAILABLE);
+        var sections = seatRepository.countAvailableSeatsBySection(concertId, SeatStatus.AVAILABLE);
+        return new SeatAvailabilitySummaryResponse(totalAvailable, sections);
+    }
+
+    @Transactional(readOnly = true)
+    public SeatSectionAvailabilityResponse findSectionAvailability(Long concertId, String section) {
+        verifyConcertExists(concertId);
+        long availableCount = seatRepository.countByConcertIdAndSectionAndStatus(
+                concertId,
+                section,
+                SeatStatus.AVAILABLE
+        );
+        var seats = seatRepository.findByConcertIdAndSectionAndStatusOrderByRowAscColAsc(
+                        concertId,
+                        section,
+                        SeatStatus.AVAILABLE
+                ).stream()
+                .map(SeatSectionSeatResponse::from)
+                .toList();
+        return new SeatSectionAvailabilityResponse(section, availableCount, seats);
     }
 
     private void verifyConcertExists(Long concertId) {

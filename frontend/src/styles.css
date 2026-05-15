@@ -348,6 +348,37 @@ h3 {
   font-size: 0.88rem;
 }
 
+.section-picker {
+  display: grid;
+  gap: 7px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 12px;
+}
+
+.section-button {
+  background: #f4efe8;
+  color: #40504b;
+  flex-direction: column;
+  gap: 1px;
+  min-height: 54px;
+  padding: 6px;
+}
+
+.section-button small {
+  color: #69746f;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.section-button.selected {
+  background: #263238;
+  color: #ffffff;
+}
+
+.section-button.selected small {
+  color: #d4e7e2;
+}
+
 .seat-map {
   display: grid;
   gap: 7px;
@@ -583,6 +614,10 @@ select:focus {
 
   .seat-map {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .section-picker {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .ticket-grid,
