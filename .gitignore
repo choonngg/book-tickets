@@ -1,6 +1,8 @@
 HELP.md
 AGENTS.md
 docs/
+k6/
+measurements/
 .worktrees/
 .gradle-user-home/
 .gradle
