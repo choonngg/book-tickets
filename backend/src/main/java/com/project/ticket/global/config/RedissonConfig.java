@@ -15,11 +15,13 @@ public class RedissonConfig {
     @Bean(destroyMethod = "shutdown")
     public RedissonClient redissonClient(
             @Value("${spring.data.redis.host}") String host,
-            @Value("${spring.data.redis.port}") int port
+            @Value("${spring.data.redis.port}") int port,
+            @Value("${spring.data.redis.ssl.enabled:false}") boolean sslEnabled
     ) {
+        String scheme = sslEnabled ? "rediss" : "redis";
         Config config = new Config();
         config.useSingleServer()
-                .setAddress("redis://" + host + ":" + port);
+                .setAddress(scheme + "://" + host + ":" + port);
         return Redisson.create(config);
     }
 }

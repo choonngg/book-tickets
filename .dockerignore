@@ -1,0 +1,11 @@
+.git
+.gradle
+.gradle-user-home
+.idea
+.worktrees
+build
+backend/.gradle
+backend/build
+backend/out
+frontend/dist
+frontend/node_modules
