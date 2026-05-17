@@ -78,7 +78,7 @@ class SeatServiceTest {
     }
 
     @Test
-    void findsAvailableSeatsForSelectedSectionOnly() {
+    void findsAllSeatsForSelectedSectionWithStatus() {
         Long concertId = createConcert();
         var seats = seatRepository.findByConcertId(concertId);
         seats.getFirst().hold();
@@ -87,14 +87,18 @@ class SeatServiceTest {
 
         assertThat(response.section()).isEqualTo("A");
         assertThat(response.availableCount()).isEqualTo(1_499);
-        assertThat(response.seats()).hasSize(1_499);
+        assertThat(response.seats()).hasSize(1_500);
         assertThat(response.seats())
                 .allSatisfy(seat -> {
                     assertThat(seat.seatId()).isNotNull();
                     assertThat(seat.row()).isPositive();
                     assertThat(seat.col()).isPositive();
                     assertThat(seat.price()).isEqualTo(50_000);
+                    assertThat(seat.status()).isNotNull();
                 });
+        assertThat(response.seats())
+                .extracting("status")
+                .contains(SeatStatus.HELD, SeatStatus.AVAILABLE);
     }
 
     private Long createConcert() {

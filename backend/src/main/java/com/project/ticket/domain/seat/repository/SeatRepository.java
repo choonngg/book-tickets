@@ -38,6 +38,8 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
             SeatStatus status
     );
 
+    List<Seat> findByConcertIdAndSectionOrderByRowAscColAsc(Long concertId, String section);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select s from Seat s where s.id = :seatId")
     Optional<Seat> findByIdForUpdate(@Param("seatId") Long seatId);

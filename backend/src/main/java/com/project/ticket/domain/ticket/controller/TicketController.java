@@ -2,6 +2,7 @@ package com.project.ticket.domain.ticket.controller;
 
 import com.project.ticket.domain.ticket.dto.TicketPurchaseRequest;
 import com.project.ticket.domain.ticket.dto.TicketPurchaseResponse;
+import com.project.ticket.domain.ticket.dto.TicketViewResponse;
 import com.project.ticket.domain.ticket.service.TicketService;
 import com.project.ticket.global.auth.AuthenticatedUser;
 import jakarta.validation.Valid;
@@ -36,7 +37,7 @@ public class TicketController {
     }
 
     @GetMapping("/me")
-    public List<TicketPurchaseResponse> findMyTickets(@AuthenticationPrincipal AuthenticatedUser user) {
+    public List<TicketViewResponse> findMyTickets(@AuthenticationPrincipal AuthenticatedUser user) {
         return ticketService.findMyTickets(user.userId());
     }
 }

@@ -43,7 +43,14 @@ class TicketMvpApiSmokeTest {
 
         assertThat(ticket.path("ticketId").asLong()).isPositive();
         assertThat(ticket.path("seatId").asLong()).isEqualTo(seatId);
-        assertThat(myTickets(fanToken)).hasSize(1);
+        JsonNode myTickets = myTickets(fanToken);
+        assertThat(myTickets).hasSize(1);
+        assertThat(myTickets.get(0).path("concertTitle").asText()).isEqualTo("Spring Concert");
+        assertThat(myTickets.get(0).path("section").asText()).isEqualTo("A");
+        assertThat(myTickets.get(0).path("row").asInt()).isEqualTo(1);
+        assertThat(myTickets.get(0).path("col").asInt()).isEqualTo(1);
+        assertThat(myTickets.get(0).has("userId")).isFalse();
+        assertThat(myTickets.get(0).has("paymentId")).isFalse();
     }
 
     @Test
@@ -92,12 +99,12 @@ class TicketMvpApiSmokeTest {
                 .andExpect(jsonPath("$.seats[0].row").value(1))
                 .andExpect(jsonPath("$.seats[0].col").value(1))
                 .andExpect(jsonPath("$.seats[0].price").value(10_000))
+                .andExpect(jsonPath("$.seats[0].status").value("AVAILABLE"))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
         assertThat(response).doesNotContain("concertId");
-        assertThat(response).doesNotContain("status");
     }
 
     private void signup(String email, String name, String role) throws Exception {

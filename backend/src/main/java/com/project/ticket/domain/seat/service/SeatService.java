@@ -55,11 +55,7 @@ public class SeatService {
                 section,
                 SeatStatus.AVAILABLE
         );
-        var seats = seatRepository.findByConcertIdAndSectionAndStatusOrderByRowAscColAsc(
-                        concertId,
-                        section,
-                        SeatStatus.AVAILABLE
-                ).stream()
+        var seats = seatRepository.findByConcertIdAndSectionOrderByRowAscColAsc(concertId, section).stream()
                 .map(SeatSectionSeatResponse::from)
                 .toList();
         return new SeatSectionAvailabilityResponse(section, availableCount, seats);

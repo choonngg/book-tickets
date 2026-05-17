@@ -9,6 +9,7 @@ import type {
   SignupRequest,
   SignupResponse,
   TicketPurchaseResponse,
+  TicketViewResponse,
   UserResponse,
 } from './types';
 
@@ -104,5 +105,5 @@ export const api = {
       body: JSON.stringify({ seatId }),
     }),
   findMyTickets: (accessToken: string) =>
-    request<TicketPurchaseResponse[]>('/api/tickets/me', { accessToken }),
+    request<TicketViewResponse[]>('/api/tickets/me', { accessToken }),
 };

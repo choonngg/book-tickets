@@ -1,6 +1,6 @@
 :root {
-  color: #17201d;
-  background: #f4f1ec;
+  color: #1d1b20;
+  background: #f7f7f5;
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-synthesis: none;
@@ -34,8 +34,8 @@ button,
 button,
 .text-button {
   border: 0;
-  border-radius: 7px;
-  background: #106b5d;
+  border-radius: 8px;
+  background: #6c47ff;
   color: #ffffff;
   cursor: pointer;
   font-weight: 800;
@@ -47,7 +47,7 @@ button,
 
 button:hover:not(:disabled),
 .text-button:hover {
-  background: #0a564b;
+  background: #5a39dd;
 }
 
 button:disabled {
@@ -66,8 +66,8 @@ button:disabled {
 .site-header {
   align-items: center;
   background: rgba(255, 255, 255, 0.9);
-  border: 1px solid #ddd5c9;
-  border-radius: 8px;
+  border: 1px solid #e4e0d8;
+  border-radius: 12px;
   display: grid;
   gap: 16px;
   grid-template-columns: auto 1fr auto;
@@ -103,8 +103,8 @@ button:disabled {
 
 .main-nav button.active,
 .main-nav button:hover {
-  background: #e7efeb;
-  color: #106b5d;
+  background: #f0ebff;
+  color: #5a39dd;
 }
 
 .header-actions {
@@ -124,8 +124,8 @@ button:disabled {
 }
 
 .login-state.active {
-  background: #dff3eb;
-  color: #106b5d;
+  background: #f0ebff;
+  color: #5a39dd;
 }
 
 .hero-section {
@@ -195,11 +195,11 @@ h3 {
 }
 
 .secondary-button {
-  background: #263238;
+  background: #111827;
 }
 
 .secondary-button:hover:not(:disabled) {
-  background: #172025;
+  background: #232936;
 }
 
 .hero-panel {
@@ -397,6 +397,17 @@ h3 {
   padding: 6px;
 }
 
+.seat-button.unavailable {
+  background: #ece8e1;
+  color: #8a8177;
+}
+
+.seat-button.unavailable::after {
+  content: "불가";
+  font-size: 0.62rem;
+  font-weight: 900;
+}
+
 .seat-button small {
   font-size: 0.68rem;
   font-weight: 750;
@@ -570,9 +581,251 @@ select:focus {
   font-weight: 850;
 }
 
+.login-page {
+  align-items: stretch;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(340px, 460px);
+  min-height: calc(100vh - 120px);
+}
+
+.login-hero,
+.page-hero {
+  border-radius: 12px;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 38px;
+}
+
+.login-hero {
+  align-items: flex-end;
+  background:
+    radial-gradient(circle at 15% 22%, rgba(255, 213, 79, 0.34), transparent 26%),
+    radial-gradient(circle at 82% 20%, rgba(86, 211, 167, 0.28), transparent 24%),
+    linear-gradient(135deg, #111827, #172554 62%, #2f1d73);
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-hero h1,
+.page-hero h1 {
+  max-width: 760px;
+}
+
+.login-hero p:last-child,
+.page-hero p:last-child {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 1.05rem;
+  margin-top: 12px;
+  max-width: 680px;
+}
+
+.login-page .auth-card {
+  align-content: center;
+  grid-template-columns: 1fr;
+}
+
+.form-heading {
+  margin-bottom: 4px;
+}
+
+.page-hero {
+  align-items: center;
+}
+
+.fan-hero {
+  background:
+    radial-gradient(circle at 85% 18%, rgba(255, 213, 79, 0.34), transparent 24%),
+    linear-gradient(135deg, #111827, #243b6b);
+}
+
+.artist-hero {
+  background:
+    radial-gradient(circle at 14% 30%, rgba(255, 143, 112, 0.3), transparent 22%),
+    linear-gradient(135deg, #202124, #3f2b63);
+}
+
+.purchase-hero {
+  background:
+    radial-gradient(circle at 84% 20%, rgba(108, 71, 255, 0.35), transparent 25%),
+    linear-gradient(135deg, #121826, #0e5f69);
+}
+
+.dashboard-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(330px, 430px);
+}
+
+.ticket-list {
+  display: grid;
+  gap: 12px;
+}
+
+.segmented-control {
+  background: #f4f2ee;
+  border: 1px solid #e4e0d8;
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+}
+
+.segmented-control button {
+  background: transparent;
+  border-radius: 999px;
+  color: #5f6470;
+  min-height: 34px;
+  padding: 0 12px;
+}
+
+.segmented-control button.active {
+  background: #111827;
+  color: #ffffff;
+}
+
+.dashboard-grid > .page-panel .concert-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dashboard-grid > aside .manage-form {
+  grid-template-columns: 1fr;
+}
+
+.pending-panel {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  min-height: 420px;
+  text-align: center;
+}
+
+.pending-panel svg {
+  color: #6c47ff;
+}
+
+.pending-panel p:last-child {
+  color: #656b76;
+  max-width: 520px;
+}
+
+.modal-backdrop {
+  align-items: center;
+  background: rgba(17, 24, 39, 0.48);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 18px;
+  position: fixed;
+  z-index: 20;
+}
+
+.seat-modal-backdrop {
+  align-items: stretch;
+}
+
+.signup-modal {
+  background: #ffffff;
+  border: 1px solid #e4e0d8;
+  border-radius: 12px;
+  box-shadow: 0 24px 48px rgba(17, 24, 39, 0.22);
+  display: grid;
+  gap: 12px;
+  max-width: 460px;
+  padding: 22px;
+  width: min(100%, 460px);
+}
+
+.seat-selection-modal {
+  background: #ffffff;
+  border: 1px solid #e4e0d8;
+  border-radius: 12px;
+  box-shadow: 0 24px 48px rgba(17, 24, 39, 0.22);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  margin: auto;
+  max-height: min(92vh, 920px);
+  max-width: 1180px;
+  padding: 22px;
+  width: min(100%, 1180px);
+}
+
+.seat-modal-layout {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 230px minmax(0, 1fr);
+  min-height: 0;
+}
+
+.seat-modal-sidebar {
+  background: #f7f5f0;
+  border: 1px solid #e4e0d8;
+  border-radius: 12px;
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding: 14px;
+}
+
+.seat-modal-sidebar > span {
+  color: #686f7a;
+  font-size: 0.88rem;
+}
+
+.seat-modal-sidebar .section-picker {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.seat-modal-map {
+  min-height: 0;
+  overflow: auto;
+}
+
+.seat-modal-map .seat-map {
+  grid-template-columns: repeat(10, minmax(56px, 1fr));
+  max-height: none;
+  min-height: 420px;
+  padding-right: 0;
+}
+
+.seat-modal-footer {
+  align-items: end;
+  border-top: 1px solid #e7dfd5;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.seat-modal-footer .purchase-summary {
+  border-top: 0;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.purchase-layout {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 430px);
+}
+
 @media (max-width: 1180px) {
   .booking-layout,
-  .auth-and-message {
+  .auth-and-message,
+  .dashboard-grid,
+  .login-page,
+  .purchase-layout {
     grid-template-columns: 1fr;
   }
 
@@ -608,6 +861,22 @@ select:focus {
     padding: 24px;
   }
 
+  .login-hero,
+  .page-hero {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 24px;
+  }
+
+  .seat-modal-layout,
+  .seat-modal-footer {
+    grid-template-columns: 1fr;
+  }
+
+  .seat-modal-map .seat-map {
+    grid-template-columns: repeat(6, minmax(54px, 1fr));
+  }
+
   .concert-card {
     grid-template-columns: 88px minmax(0, 1fr);
   }
@@ -621,6 +890,7 @@ select:focus {
   }
 
   .ticket-grid,
+  .dashboard-grid > .page-panel .concert-grid,
   .auth-card,
   .manage-form,
   .purchase-summary {

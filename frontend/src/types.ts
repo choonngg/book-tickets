@@ -75,6 +75,7 @@ export interface SeatSectionSeatResponse {
   row: number;
   col: number;
   price: number;
+  status: string;
 }
 
 export interface SeatSectionAvailabilityResponse {
@@ -88,5 +89,14 @@ export interface TicketPurchaseResponse {
   userId: number;
   seatId: number;
   paymentId: number;
+  status: string;
+}
+
+export interface TicketViewResponse {
+  ticketId: number;
+  concertTitle: string;
+  section: string;
+  row: number;
+  col: number;
   status: string;
 }

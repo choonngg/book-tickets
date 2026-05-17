@@ -1,20 +1,13 @@
-import {
-  CalendarDays,
-  CalendarPlus,
-  CheckCircle2,
-  LogIn,
-  LogOut,
-  MapPin,
-  Music2,
-  ReceiptText,
-  RefreshCw,
-  Search,
-  Ticket,
-  UserPlus,
-} from 'lucide-react';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 
 import { api } from './api';
+import { AppHeader } from './components/AppHeader';
+import { MessagePanel } from './components/MessagePanel';
+import { AdminPendingPage } from './pages/AdminPendingPage';
+import { ArtistHomePage } from './pages/ArtistHomePage';
+import { FanHomePage } from './pages/FanHomePage';
+import { LoginPage } from './pages/LoginPage';
+import { PurchasePage } from './pages/PurchasePage';
 import type {
   ConcertCreateRequest,
   ConcertResponse,
@@ -22,12 +15,12 @@ import type {
   SeatSectionSeatResponse,
   SeatSectionSummaryResponse,
   SignupRequest,
-  TicketPurchaseResponse,
+  TicketViewResponse,
   UserResponse,
   UserRole,
 } from './types';
 
-type View = 'home' | 'tickets' | 'manage';
+type Page = 'login' | 'fan-home' | 'artist-home' | 'purchase' | 'admin-pending';
 
 const initialAuthForm: SignupRequest = {
   email: 'fan@example.com',
@@ -46,7 +39,7 @@ const initialConcertForm: ConcertCreateRequest = {
 };
 
 function App() {
-  const [view, setView] = useState<View>('home');
+  const [page, setPage] = useState<Page>('login');
   const [authForm, setAuthForm] = useState(initialAuthForm);
   const [concertForm, setConcertForm] = useState(initialConcertForm);
   const [session, setSession] = useState<LoginResponse | null>(() => readSession());
@@ -58,8 +51,8 @@ function App() {
   const [totalAvailableSeats, setTotalAvailableSeats] = useState(0);
   const [seats, setSeats] = useState<SeatSectionSeatResponse[]>([]);
   const [selectedSeatId, setSelectedSeatId] = useState<number | null>(null);
-  const [tickets, setTickets] = useState<TicketPurchaseResponse[]>([]);
-  const [message, setMessage] = useState('원하는 공연을 선택하고 좌석을 예매해보세요.');
+  const [tickets, setTickets] = useState<TicketViewResponse[]>([]);
+  const [message, setMessage] = useState('로그인하면 역할에 맞는 화면으로 이동합니다.');
   const [isBusy, setIsBusy] = useState(false);
 
   const accessToken = session?.accessToken ?? '';
@@ -77,11 +70,20 @@ function App() {
     if (!session) {
       localStorage.removeItem('ticket-session');
       setMe(null);
+      setPage('login');
       return;
     }
 
     localStorage.setItem('ticket-session', JSON.stringify(session));
   }, [session]);
+
+  useEffect(() => {
+    if (!session || me) {
+      return;
+    }
+
+    void loadProfile(session.accessToken);
+  }, [me, session]);
 
   async function run<T>(successMessage: string, action: () => Promise<T>) {
     setIsBusy(true);
@@ -98,27 +100,34 @@ function App() {
     }
   }
 
+  async function loadProfile(token: string) {
+    const profile = await run('내 정보를 불러왔습니다.', () => api.me(token));
+
+    if (profile) {
+      setMe(profile);
+      setPage(pageForRole(profile.role));
+    }
+  }
+
   async function loadConcerts(showMessage = true) {
     const result = await run(
-      showMessage ? '콘서트 목록을 새로 불러왔습니다.' : '콘서트 목록을 불러왔습니다.',
+      showMessage ? '공연 목록을 새로 불러왔습니다.' : '공연 목록을 불러왔습니다.',
       api.findConcerts,
     );
 
     if (result) {
       setConcerts(result);
-      if (!selectedConcertId && result[0]) {
-        void selectConcert(result[0]);
-      }
     }
   }
 
-  async function selectConcert(concert: ConcertResponse) {
+  async function openPurchase(concert: ConcertResponse) {
     setSelectedConcertId(concert.concertId);
     setSelectedSeatId(null);
     setSelectedSection(null);
     setSeats([]);
     setSeatSections([]);
     setTotalAvailableSeats(0);
+    setPage('purchase');
 
     const result = await run(`${concert.title}의 구역별 예매 가능 좌석을 불러왔습니다.`, () =>
       api.findSeatAvailabilitySummary(concert.concertId),
@@ -151,7 +160,12 @@ function App() {
 
   async function handleSignup(event: FormEvent) {
     event.preventDefault();
-    await run('회원가입이 완료되었습니다. 이제 로그인할 수 있습니다.', () => api.signup(authForm));
+    const signupForm: SignupRequest = {
+      ...authForm,
+      role: authForm.role === 'ADMIN' ? 'FAN' : authForm.role,
+    };
+
+    await run('회원가입이 완료되었습니다. 이제 로그인할 수 있습니다.', () => api.signup(signupForm));
   }
 
   async function handleLogin(event: FormEvent) {
@@ -163,8 +177,7 @@ function App() {
 
     if (loginResult) {
       setSession(loginResult);
-      const profile = await run('내 정보를 불러왔습니다.', () => api.me(loginResult.accessToken));
-      setMe(profile);
+      await loadProfile(loginResult.accessToken);
     }
   }
 
@@ -175,31 +188,57 @@ function App() {
 
     setSession(null);
     setTickets([]);
+    setConcerts([]);
+    setSelectedConcertId(null);
     setMessage('로그아웃되었습니다.');
   }
 
   async function handlePurchase() {
     if (!accessToken) {
       setMessage('예매하려면 먼저 로그인하세요.');
-      return;
+      return false;
     }
 
-    if (!selectedSeat) {
+    if (!selectedSeat || !selectedSection || !selectedConcert) {
       setMessage('예매할 좌석을 먼저 선택하세요.');
-      return;
+      return false;
     }
 
+    const purchasedSeat = selectedSeat;
+    const purchasedSection = selectedSection;
+    const purchasedConcert = selectedConcert;
     const result = await run('티켓 예매가 완료되었습니다.', () =>
-      api.purchaseTicket(accessToken, selectedSeat.seatId, createIdempotencyKey()),
+      api.purchaseTicket(accessToken, purchasedSeat.seatId, createIdempotencyKey()),
     );
 
     if (result) {
-      setTickets((current) => [result, ...current]);
+      setTickets((current) => [
+        {
+          ticketId: result.ticketId,
+          concertTitle: purchasedConcert.title,
+          section: purchasedSection,
+          row: purchasedSeat.row,
+          col: purchasedSeat.col,
+          status: result.status,
+        },
+        ...current,
+      ]);
+      setSeats((current) =>
+        current.map((seat) => (seat.seatId === purchasedSeat.seatId ? { ...seat, status: 'SOLD' } : seat)),
+      );
+      setSeatSections((current) =>
+        current.map((section) =>
+          section.section === purchasedSection
+            ? { ...section, availableCount: Math.max(section.availableCount - 1, 0) }
+            : section,
+        ),
+      );
+      setTotalAvailableSeats((current) => Math.max(current - 1, 0));
       setSelectedSeatId(null);
-      if (selectedConcert) {
-        void selectConcert(selectedConcert);
-      }
+      return true;
     }
+
+    return false;
   }
 
   async function handleFindMyTickets() {
@@ -212,7 +251,6 @@ function App() {
 
     if (result) {
       setTickets(result);
-      setView('tickets');
     }
   }
 
@@ -233,354 +271,88 @@ function App() {
 
     if (result) {
       setConcerts((current) => [result, ...current.filter((concert) => concert.concertId !== result.concertId)]);
-      await selectConcert(result);
-      setView('home');
     }
   }
 
   return (
     <main className="app-shell">
-      <header className="site-header">
-        <button className="brand" type="button" onClick={() => setView('home')}>
-          <Ticket size={22} aria-hidden="true" />
-          Book Tickets
-        </button>
-        <nav className="main-nav" aria-label="주요 메뉴">
-          <button className={view === 'home' ? 'active' : ''} type="button" onClick={() => setView('home')}>
-            공연
-          </button>
-          <button className={view === 'tickets' ? 'active' : ''} type="button" onClick={handleFindMyTickets}>
-            내 티켓
-          </button>
-          <button className={view === 'manage' ? 'active' : ''} type="button" onClick={() => setView('manage')}>
-            공연 등록
-          </button>
-        </nav>
-        <div className="header-actions">
-          <span className={accessToken ? 'login-state active' : 'login-state'}>{me ? me.name : '게스트'}</span>
-          {accessToken ? (
-            <button className="text-button" type="button" onClick={handleLogout}>
-              <LogOut size={16} aria-hidden="true" />
-              로그아웃
-            </button>
-          ) : (
-            <a className="text-button" href="#login">
-              <LogIn size={16} aria-hidden="true" />
-              로그인
-            </a>
-          )}
-        </div>
-      </header>
-
-      {view === 'home' && (
-        <>
-          <section className="hero-section">
-            <div className="hero-copy">
-              <p className="eyebrow">LIVE TICKET BOOKING</p>
-              <h1>지금 가장 빠른 예매</h1>
-              <p>공연을 고르고, 좌석을 선택하고, 티켓 구매까지 한 번에 진행하세요.</p>
-              <div className="hero-actions">
-                <button type="button" onClick={() => loadConcerts(true)} disabled={isBusy}>
-                  <RefreshCw size={16} aria-hidden="true" />
-                  콘서트 새로고침
-                </button>
-                <button className="secondary-button" type="button" onClick={handleFindMyTickets} disabled={isBusy}>
-                  <ReceiptText size={16} aria-hidden="true" />
-                  내 티켓 보기
-                </button>
-              </div>
-            </div>
-            <div className="hero-panel">
-              <span>선택한 공연</span>
-              <strong>{selectedConcert?.title ?? '공연을 선택하세요'}</strong>
-              <p>{selectedConcert ? `${selectedConcert.venue} / ${formatDate(selectedConcert.concertDate)}` : message}</p>
-            </div>
-          </section>
-
-          <section className="booking-layout">
-            <section className="concert-section">
-              <div className="section-heading">
-                <div>
-                  <p className="eyebrow">CONCERTS</p>
-                  <h2>공연 둘러보기</h2>
-                </div>
-                <span>{concerts.length}개 공연</span>
-              </div>
-              <div className="concert-grid">
-                {concerts.length === 0 ? (
-                  <div className="empty-state">
-                    <Music2 size={32} aria-hidden="true" />
-                    <strong>아직 조회된 공연이 없습니다.</strong>
-                    <p>백엔드 서버를 실행한 뒤 콘서트 새로고침을 눌러보세요.</p>
-                  </div>
-                ) : (
-                  concerts.map((concert) => (
-                    <article
-                      className={concert.concertId === selectedConcertId ? 'concert-card selected' : 'concert-card'}
-                      key={concert.concertId}
-                    >
-                      <div className="poster-block">
-                        <Music2 size={30} aria-hidden="true" />
-                      </div>
-                      <div className="concert-info">
-                        <span className="status-pill">{concert.status}</span>
-                        <h3>{concert.title}</h3>
-                        <p>
-                          <MapPin size={14} aria-hidden="true" />
-                          {concert.venue}
-                        </p>
-                        <p>
-                          <CalendarDays size={14} aria-hidden="true" />
-                          {formatDate(concert.concertDate)}
-                        </p>
-                        <button type="button" onClick={() => selectConcert(concert)} disabled={isBusy}>
-                          상세 보기
-                        </button>
-                      </div>
-                    </article>
-                  ))
-                )}
-              </div>
-            </section>
-
-            <aside className="booking-panel">
-              <div className="section-heading compact">
-                <div>
-                  <p className="eyebrow">SEATS</p>
-                  <h2>좌석 선택</h2>
-                </div>
-                <span>{totalAvailableSeats}석</span>
-              </div>
-              {selectedConcert ? (
-                <>
-                  <div className="selected-concert">
-                    <strong>{selectedConcert.title}</strong>
-                    <span>{selectedConcert.venue}</span>
-                  </div>
-                  <div className="section-picker" aria-label="좌석 구역">
-                    {seatSections.length === 0 ? (
-                      <p className="empty-copy">표시할 예매 가능 구역이 없습니다.</p>
-                    ) : (
-                      seatSections.map((section) => (
-                        <button
-                          className={section.section === selectedSection ? 'section-button selected' : 'section-button'}
-                          key={section.section}
-                          type="button"
-                          onClick={() => selectSection(section.section)}
-                          disabled={isBusy}
-                        >
-                          {section.section}
-                          <small>{section.availableCount}석</small>
-                        </button>
-                      ))
-                    )}
-                  </div>
-                  <div className="seat-map" aria-label="예매 가능 좌석">
-                    {!selectedSection ? (
-                      <p className="empty-copy">좌석을 보려면 구역을 선택하세요.</p>
-                    ) : seats.length === 0 ? (
-                      <p className="empty-copy">표시할 예매 가능 좌석이 없습니다.</p>
-                    ) : (
-                      seats.map((seat) => (
-                        <button
-                          className={seat.seatId === selectedSeatId ? 'seat-button selected' : 'seat-button'}
-                          key={seat.seatId}
-                          type="button"
-                          onClick={() => setSelectedSeatId(seat.seatId)}
-                        >
-                          {selectedSection}
-                          <small>
-                            {seat.row}-{seat.col}
-                          </small>
-                        </button>
-                      ))
-                    )}
-                  </div>
-                  <div className="purchase-summary">
-                    <div>
-                      <span>선택 좌석</span>
-                      <strong>
-                        {selectedSeat && selectedSection
-                          ? `${selectedSection}구역 ${selectedSeat.row}행 ${selectedSeat.col}열`
-                          : '미선택'}
-                      </strong>
-                    </div>
-                    <div>
-                      <span>가격</span>
-                      <strong>{selectedSeat ? `${selectedSeat.price.toLocaleString()}원` : '-'}</strong>
-                    </div>
-                  </div>
-                  <button className="wide-button" type="button" onClick={handlePurchase} disabled={isBusy}>
-                    <CheckCircle2 size={17} aria-hidden="true" />
-                    선택 좌석 예매하기
-                  </button>
-                </>
-              ) : (
-                <div className="empty-state small">
-                  <Search size={26} aria-hidden="true" />
-                  <strong>공연을 먼저 선택하세요.</strong>
-                  <p>공연 카드를 누르면 좌석 선택이 열립니다.</p>
-                </div>
-              )}
-            </aside>
-          </section>
-        </>
+      {page !== 'login' && (
+        <AppHeader
+          currentPage={page}
+          me={me}
+          onGoArtist={() => setPage('artist-home')}
+          onGoFan={() => setPage('fan-home')}
+          onLogout={handleLogout}
+        />
       )}
 
-      {view === 'tickets' && (
-        <section className="page-panel">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">MY TICKETS</p>
-              <h2>내 티켓</h2>
-            </div>
-            <button type="button" onClick={handleFindMyTickets} disabled={isBusy}>
-              <RefreshCw size={16} aria-hidden="true" />
-              다시 조회
-            </button>
-          </div>
-          <div className="ticket-grid">
-            {tickets.length === 0 ? (
-              <div className="empty-state">
-                <ReceiptText size={32} aria-hidden="true" />
-                <strong>표시할 티켓이 없습니다.</strong>
-                <p>예매를 완료하면 이곳에서 구매 내역을 확인할 수 있습니다.</p>
-              </div>
-            ) : (
-              tickets.map((ticket) => (
-                <article className="ticket-card" key={`${ticket.ticketId}-${ticket.seatId}`}>
-                  <span>Ticket #{ticket.ticketId}</span>
-                  <strong>{ticket.status}</strong>
-                  <p>좌석 #{ticket.seatId}</p>
-                  <p>결제 #{ticket.paymentId}</p>
-                </article>
-              ))
-            )}
-          </div>
-        </section>
+      {page === 'login' && (
+        <LoginPage
+          authForm={authForm}
+          isBusy={isBusy}
+          onChange={setAuthForm}
+          onLogin={handleLogin}
+          onSignup={handleSignup}
+        />
       )}
 
-      {view === 'manage' && (
-        <section className="page-panel">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">ARTIST / ADMIN</p>
-              <h2>공연 등록</h2>
-            </div>
-            <span>로그인 필요</span>
-          </div>
-          <form className="manage-form" onSubmit={handleCreateConcert}>
-            <label>
-              공연명
-              <input
-                value={concertForm.title}
-                onChange={(event) => setConcertForm({ ...concertForm, title: event.target.value })}
-              />
-            </label>
-            <label>
-              장소
-              <input
-                value={concertForm.venue}
-                onChange={(event) => setConcertForm({ ...concertForm, venue: event.target.value })}
-              />
-            </label>
-            <label>
-              공연일
-              <input
-                type="datetime-local"
-                value={concertForm.concertDate}
-                onChange={(event) => setConcertForm({ ...concertForm, concertDate: event.target.value })}
-              />
-            </label>
-            <label>
-              예매 오픈
-              <input
-                type="datetime-local"
-                value={concertForm.ticketOpenDate}
-                onChange={(event) => setConcertForm({ ...concertForm, ticketOpenDate: event.target.value })}
-              />
-            </label>
-            <label>
-              예매 마감
-              <input
-                type="datetime-local"
-                value={concertForm.ticketCloseDate}
-                onChange={(event) => setConcertForm({ ...concertForm, ticketCloseDate: event.target.value })}
-              />
-            </label>
-            <label>
-              기본 가격
-              <input
-                type="number"
-                min="0"
-                value={concertForm.price}
-                onChange={(event) => setConcertForm({ ...concertForm, price: Number(event.target.value) })}
-              />
-            </label>
-            <button type="submit" disabled={isBusy}>
-              <CalendarPlus size={16} aria-hidden="true" />
-              공연 등록하기
-            </button>
-          </form>
-        </section>
+      {page === 'fan-home' && (
+        <FanHomePage
+          concerts={concerts}
+          isBusy={isBusy}
+          tickets={tickets}
+          onLoadConcerts={() => loadConcerts(true)}
+          onLoadTickets={handleFindMyTickets}
+          onOpenPurchase={openPurchase}
+        />
       )}
 
-      <section className="auth-and-message">
-        <form className="auth-card" id="login" onSubmit={handleLogin}>
-          <div>
-            <p className="eyebrow">ACCOUNT</p>
-            <h2>로그인</h2>
-          </div>
-          <label>
-            이메일
-            <input
-              type="email"
-              value={authForm.email}
-              onChange={(event) => setAuthForm({ ...authForm, email: event.target.value })}
-            />
-          </label>
-          <label>
-            비밀번호
-            <input
-              type="password"
-              value={authForm.password}
-              onChange={(event) => setAuthForm({ ...authForm, password: event.target.value })}
-            />
-          </label>
-          <label>
-            이름
-            <input value={authForm.name} onChange={(event) => setAuthForm({ ...authForm, name: event.target.value })} />
-          </label>
-          <label>
-            역할
-            <select
-              value={authForm.role}
-              onChange={(event) => setAuthForm({ ...authForm, role: event.target.value as UserRole })}
-            >
-              <option value="FAN">FAN</option>
-              <option value="ARTIST">ARTIST</option>
-              <option value="ADMIN">ADMIN</option>
-            </select>
-          </label>
-          <div className="auth-actions">
-            <button type="submit" disabled={isBusy}>
-              <LogIn size={16} aria-hidden="true" />
-              로그인
-            </button>
-            <button className="secondary-button" type="button" onClick={handleSignup} disabled={isBusy}>
-              <UserPlus size={16} aria-hidden="true" />
-              회원가입
-            </button>
-          </div>
-        </form>
+      {page === 'artist-home' && me && (
+        <ArtistHomePage
+          concertForm={concertForm}
+          concerts={concerts}
+          isBusy={isBusy}
+          me={me}
+          onConcertFormChange={setConcertForm}
+          onCreateConcert={handleCreateConcert}
+          onLoadConcerts={() => loadConcerts(true)}
+        />
+      )}
 
-        <aside className="message-card" aria-live="polite">
-          <span>{isBusy ? '처리 중' : '알림'}</span>
-          <p>{message}</p>
-        </aside>
-      </section>
+      {page === 'purchase' && selectedConcert && (
+        <PurchasePage
+          concert={selectedConcert}
+          isBusy={isBusy}
+          onBack={() => setPage('fan-home')}
+          onPurchase={handlePurchase}
+          onSelectSeat={setSelectedSeatId}
+          onSelectSection={selectSection}
+          seats={seats}
+          seatSections={seatSections}
+          selectedSeat={selectedSeat}
+          selectedSeatId={selectedSeatId}
+          selectedSection={selectedSection}
+          totalAvailableSeats={totalAvailableSeats}
+        />
+      )}
+
+      {page === 'admin-pending' && <AdminPendingPage />}
+
+      <MessagePanel isBusy={isBusy} message={message} />
     </main>
   );
+}
+
+function pageForRole(role: UserRole): Page {
+  if (role === 'FAN') {
+    return 'fan-home';
+  }
+
+  if (role === 'ARTIST') {
+    return 'artist-home';
+  }
+
+  return 'admin-pending';
 }
 
 function readSession(): LoginResponse | null {
@@ -603,15 +375,6 @@ function createIdempotencyKey() {
   }
 
   return `ticket-${Date.now()}`;
-}
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat('ko-KR', {
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(value));
 }
 
 export default App;

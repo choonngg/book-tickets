@@ -48,14 +48,7 @@ public class TicketService {
     }
 
     @Transactional(readOnly = true)
-    public List<TicketPurchaseResponse> findMyTickets(Long userId) {
-        return ticketRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
-                .map(TicketPurchaseResponse::from)
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public List<TicketViewResponse> findMyTicketViews(Long userId) {
+    public List<TicketViewResponse> findMyTickets(Long userId) {
         return ticketRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(TicketViewResponse::from)
                 .toList();
