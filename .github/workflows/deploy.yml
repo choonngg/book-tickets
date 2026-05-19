@@ -208,3 +208,21 @@ jobs:
           docker compose -f docker-compose.prod.yml up -d --no-build --remove-orphans
           docker image prune -f
           REMOTE
+
+      - name: Inspect remote deployment on failure
+        if: failure()
+        run: |
+          ssh -i ~/.ssh/deploy_key "${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}" <<'REMOTE'
+          set +e
+          cd ~/book-tickets || exit 0
+          echo "## docker version"
+          docker version
+          echo "## docker compose version"
+          docker compose version
+          echo "## docker compose ps"
+          docker compose -f docker-compose.prod.yml ps
+          echo "## backend logs"
+          docker compose -f docker-compose.prod.yml logs backend --tail=200
+          echo "## nginx logs"
+          docker compose -f docker-compose.prod.yml logs nginx --tail=200
+          REMOTE
