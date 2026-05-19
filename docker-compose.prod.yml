@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    image: book-tickets-backend:latest
+    image: ${BACKEND_IMAGE:-book-tickets-backend:latest}
     restart: unless-stopped
     env_file:
       - path: .env
@@ -23,7 +23,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.nginx
-    image: book-tickets-nginx:latest
+    image: ${NGINX_IMAGE:-book-tickets-nginx:latest}
     restart: unless-stopped
     depends_on:
       backend:
