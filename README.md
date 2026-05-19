@@ -1,14 +1,15 @@
-# Book Tickets
+# 🎟️ Book Tickets
 
 [![CI](https://github.com/choonngg/book-tickets/actions/workflows/ci.yml/badge.svg)](https://github.com/choonngg/book-tickets/actions/workflows/ci.yml)
 [![Deploy](https://github.com/choonngg/book-tickets/actions/workflows/deploy.yml/badge.svg)](https://github.com/choonngg/book-tickets/actions/workflows/deploy.yml)
 
-동시 좌석 예매 상황에서 **중복 구매를 방지하는 것**을 핵심 목표로 만든 공연 예매 프로젝트입니다.
+동시 좌석 예매 상황에서 **중복 구매를 방지하는 것**을 핵심 목표로 만든 공연 예매 프로젝트입니다.  
 팬은 공연을 조회하고 구역별 좌석을 선택해 예매할 수 있고, 아티스트는 공연을 등록하고 관리할 수 있습니다.
 
-단순 CRUD를 넘어, 좌석 예매에서 발생하는 동시성 문제를 다루고 Optimistic Lock, Pessimistic Lock, Redisson 기반 Distributed Lock 전략을 비교했습니다. 최종적으로 AWS 환경에서 ALB, EC2 Docker Compose, RDS MySQL, ElastiCache Valkey를 사용해 배포까지 검증했습니다.
+단순 CRUD를 넘어, 좌석 예매에서 발생하는 동시성 문제를 다루고 Optimistic Lock, Pessimistic Lock, Redisson 기반 Distributed Lock 전략을 비교했습니다.  
+최종적으로 AWS 환경에서 ALB, EC2 Docker Compose, RDS MySQL, ElastiCache Valkey를 사용해 배포까지 검증했습니다.
 
-## 주요 기능
+## ✨ 주요 기능
 
 | 구분 | 내용 |
 |---|---|
@@ -19,7 +20,8 @@
 | 동시성 제어 | 동일 좌석 중복 예매 방지, 예매 전략별 부하 테스트 |
 | 배포 | GitHub Actions, GHCR, Docker Compose, AWS 기반 배포 |
 
-## 기술 스택
+
+## 🛠️ 기술 스택
 
 | 영역 | 기술 |
 |---|---|
@@ -33,7 +35,8 @@
 | CI/CD | GitHub Actions, GHCR |
 | Test | JUnit 5, Mockito, Spring MVC Test, Vitest |
 
-## 아키텍처
+
+## 🏗️ 아키텍처
 
 ```mermaid
 flowchart LR
@@ -46,39 +49,27 @@ flowchart LR
     Backend --> Valkey["ElastiCache Valkey :6379"]
 ```
 
-운영 트래픽은 ALB를 통해 EC2의 Nginx 컨테이너로 들어옵니다. Nginx는 React 정적 파일을 서빙하고, `/api/**` 및 `/actuator/health` 요청을 Spring Boot 백엔드로 프록시합니다.
+운영 트래픽은 ALB를 통해 EC2의 Nginx 컨테이너로 들어옵니다.  
+Nginx는 React 정적 파일을 서빙하고, `/api/**` 및 `/actuator/health` 요청을 Spring Boot 백엔드로 프록시합니다.
 
-## 핵심 사용자 흐름
+## 🧭 핵심 사용자 흐름
 
 ### Artist
-
 ```text
 회원가입 -> 로그인 -> 공연 생성 -> 공연 목록 확인
 ```
 
 ### Fan
-
 ```text
 회원가입 -> 로그인 -> 공연 새로고침 -> 공연 선택
 -> 구역 선택 -> 예매 가능 좌석 확인 -> 예매 -> 내 티켓 확인
 ```
 
 ### Admin
-
 현재 ADMIN 역할은 로그인 가능하지만, 별도 관리 기능은 준비 중 화면으로 처리합니다. 프로젝트 범위를 예매 핵심 흐름에 집중하기 위한 결정입니다.
 
-## 도메인 모델
-
-```mermaid
-erDiagram
-    USER ||--o{ CONCERT : creates
-    CONCERT ||--o{ SEAT : has
-    USER ||--o{ TICKET : purchases
-    SEAT ||--o| TICKET : assigned_to
-    TICKET ||--|| PAYMENT : paid_by
-```
-
-## API 개요
+  
+## 🔌 API 개요
 
 | 도메인 | 엔드포인트 |
 |---|---|
@@ -90,8 +81,8 @@ erDiagram
 
 `POST /api/tickets` 요청에는 중복 결제를 막기 위해 `Idempotency-Key` 헤더가 필요합니다.
 
-## 예매 전략
-
+  
+## 🔒 예매 전략
 예매 로직은 `TICKET_PURCHASE_STRATEGY` 설정값으로 전략을 선택합니다.
 
 | 전략 | 목적 |
@@ -100,25 +91,23 @@ erDiagram
 | `pessimistic` | DB Row Lock 기반 동시 예매 동작 비교 |
 | `distributed` | Redisson 분산 락 기반 운영 유사 환경 적용 |
 
-AWS 배포 환경에서는 다음 전략을 사용했습니다.
 
+AWS 배포 환경에서는 다음 전략을 사용했습니다.
 ```text
 TICKET_PURCHASE_STRATEGY=distributed
 ```
 
-## 로컬 실행
+
+## 💻 로컬 실행
 
 ### 요구 사항
-
 - Java 25
 - Node.js 24
 - MySQL
 - Redis 또는 Valkey
 
 ### Backend
-
 먼저 필요한 환경 변수를 설정합니다.
-
 ```bash
 SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/ticket?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
 SPRING_DATASOURCE_USERNAME=root
@@ -134,14 +123,12 @@ PAYMENT_TIMEOUT_MILLIS=5000
 ```
 
 실행:
-
 ```bash
 cd backend
 ./gradlew bootRun
 ```
-
+  
 Windows:
-
 ```powershell
 cd backend
 .\gradlew.bat bootRun
@@ -154,8 +141,8 @@ cd frontend
 npm ci
 npm run dev
 ```
-
-## 테스트
+  
+## ✅ 테스트
 
 ### Backend
 
@@ -185,7 +172,8 @@ npm run build
 docker compose -f docker-compose.prod.yml config
 ```
 
-## 배포
+  
+## 🚀 배포
 
 검증한 배포 구조는 다음과 같습니다.
 
@@ -232,7 +220,8 @@ ghcr.io/choonngg/book-tickets-nginx:<commit-sha>
 | `TICKET_PURCHASE_STRATEGY` | AWS 배포 환경에서는 `distributed` |
 | `PAYMENT_TIMEOUT_MILLIS` | Mock 결제 timeout |
 
-## 배포 중 해결한 문제
+  
+## 🧯 배포 중 해결한 문제
 
 | 문제 | 해결 |
 |---|---|
@@ -243,7 +232,8 @@ ghcr.io/choonngg/book-tickets-nginx:<commit-sha>
 | 브라우저에서 ALB `503` 응답 | ALB 가용 영역 및 Target Group 설정을 EC2 subnet/AZ와 맞춤 |
 | README만 수정해도 Deploy 실행 | Deploy workflow에 path filter를 적용해 문서 변경 배포 제외 |
 
-## 프로젝트 구조
+  
+## 📁 프로젝트 구조
 
 ```text
 .
@@ -257,7 +247,8 @@ ghcr.io/choonngg/book-tickets-nginx:<commit-sha>
 └── .env.example
 ```
 
-## 현재 상태
+  
+## 📌 현재 상태
 
 | 항목 | 상태 |
 |---|---|
