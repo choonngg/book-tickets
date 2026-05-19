@@ -5,6 +5,14 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "backend/**"
+      - "frontend/**"
+      - "nginx/**"
+      - "Dockerfile.backend"
+      - "Dockerfile.nginx"
+      - "docker-compose.prod.yml"
+      - ".github/workflows/deploy.yml"
 
 permissions:
   contents: read
