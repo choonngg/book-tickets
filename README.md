@@ -38,7 +38,7 @@
 
 ## 🏗️ 아키텍처
 
-<img width="1071" height="741" alt="Architecture Diagram" src="https://github.com/user-attachments/assets/db5326b3-a40f-4dab-8a60-50451ff7c988" />
+<img width="1108" height="783" alt="Architecture Diagram" src="https://github.com/user-attachments/assets/9db233f0-e52d-4595-967d-b35ac956007c" />
 
 운영 트래픽은 ALB를 통해 EC2의 Nginx 컨테이너로 들어옵니다.  
 Nginx는 React 정적 파일을 서빙하고, `/api/**` 및 `/actuator/health` 요청을 Spring Boot 백엔드로 프록시합니다.
