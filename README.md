@@ -48,17 +48,7 @@
 
 ## 🧩 ERD
 
-```mermaid
-erDiagram
-    USERS ||--|| LOGIN : has
-    USERS ||--o{ CONCERT : creates
-    CONCERT ||--o{ SEAT : has
-    USERS ||--o{ PAYMENT : pays
-    SEAT ||--o{ PAYMENT : paid_for
-    USERS ||--o{ TICKET : purchases
-    SEAT ||--o| TICKET : assigned_to
-    PAYMENT ||--o| TICKET : completes
-```
+<img width="1636" height="883" alt="ERD" src="https://github.com/user-attachments/assets/cd321aff-b709-46af-9d34-1b6f363fde5a" />
 
 <br />
 
