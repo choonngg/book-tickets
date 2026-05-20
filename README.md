@@ -46,6 +46,22 @@
 
 <br />
 
+## 🧩 ERD
+
+```mermaid
+erDiagram
+    USERS ||--|| LOGIN : has
+    USERS ||--o{ CONCERT : creates
+    CONCERT ||--o{ SEAT : has
+    USERS ||--o{ PAYMENT : pays
+    SEAT ||--o{ PAYMENT : paid_for
+    USERS ||--o{ TICKET : purchases
+    SEAT ||--o| TICKET : assigned_to
+    PAYMENT ||--o| TICKET : completes
+```
+
+<br />
+
 ## 🧭 핵심 사용자 흐름
 
 ### Artist
