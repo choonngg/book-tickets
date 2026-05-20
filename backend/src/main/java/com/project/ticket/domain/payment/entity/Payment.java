@@ -1,12 +1,17 @@
 package com.project.ticket.domain.payment.entity;
 
+import com.project.ticket.domain.seat.entity.Seat;
+import com.project.ticket.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 
@@ -20,11 +25,13 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(nullable = false)
-    private Long seatId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "seat_id", nullable = false)
+    private Seat seat;
 
     @Column(nullable = false)
     private int amount;
@@ -39,18 +46,18 @@ public class Payment {
     protected Payment() {
     }
 
-    public static Payment succeeded(Long userId, Long seatId, int amount) {
-        return create(userId, seatId, amount, PaymentStatus.SUCCEEDED);
+    public static Payment succeeded(User user, Seat seat, int amount) {
+        return create(user, seat, amount, PaymentStatus.SUCCEEDED);
     }
 
-    public static Payment failed(Long userId, Long seatId, int amount) {
-        return create(userId, seatId, amount, PaymentStatus.FAILED);
+    public static Payment failed(User user, Seat seat, int amount) {
+        return create(user, seat, amount, PaymentStatus.FAILED);
     }
 
-    private static Payment create(Long userId, Long seatId, int amount, PaymentStatus status) {
+    private static Payment create(User user, Seat seat, int amount, PaymentStatus status) {
         Payment payment = new Payment();
-        payment.userId = userId;
-        payment.seatId = seatId;
+        payment.user = user;
+        payment.seat = seat;
         payment.amount = amount;
         payment.status = status;
         payment.createdAt = LocalDateTime.now();

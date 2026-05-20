@@ -15,7 +15,7 @@ public record TicketPurchaseResponse(
                 ticket.getId(),
                 ticket.getUser().getId(),
                 ticket.getSeat().getId(),
-                ticket.getPaymentId(),
+                ticket.getPayment().getId(),
                 ticket.getStatus()
         );
     }

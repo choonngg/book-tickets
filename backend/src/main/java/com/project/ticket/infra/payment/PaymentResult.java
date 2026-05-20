@@ -1,11 +1,17 @@
 package com.project.ticket.infra.payment;
 
-public record PaymentResult(boolean successful, Long paymentId) {
-    public static PaymentResult success(Long paymentId) {
-        return new PaymentResult(true, paymentId);
+import com.project.ticket.domain.payment.entity.Payment;
+
+public record PaymentResult(boolean successful, Payment payment) {
+    public static PaymentResult success(Payment payment) {
+        return new PaymentResult(true, payment);
     }
 
-    public static PaymentResult failure(Long paymentId) {
-        return new PaymentResult(false, paymentId);
+    public static PaymentResult failure(Payment payment) {
+        return new PaymentResult(false, payment);
+    }
+
+    public static PaymentResult successWithoutPayment() {
+        return new PaymentResult(true, null);
     }
 }

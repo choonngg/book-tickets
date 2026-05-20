@@ -37,14 +37,14 @@ public class TicketPurchaseProcessor {
                 .orElseThrow(() -> new BusinessException(ErrorCode.SEAT_NOT_FOUND));
 
         seat.hold();
-        PaymentResult paymentResult = paymentClient.pay(userId, seat.getId(), seat.getPrice());
+        PaymentResult paymentResult = paymentClient.pay(user, seat, seat.getPrice());
         if (!paymentResult.successful()) {
             seat.release();
             throw new BusinessException(ErrorCode.PAYMENT_FAILED);
         }
 
         seat.completeSale();
-        Ticket ticket = ticketRepository.save(Ticket.complete(user, seat, paymentResult.paymentId()));
+        Ticket ticket = ticketRepository.save(Ticket.complete(user, seat, paymentResult.payment()));
         return TicketPurchaseResponse.from(ticket);
     }
 }

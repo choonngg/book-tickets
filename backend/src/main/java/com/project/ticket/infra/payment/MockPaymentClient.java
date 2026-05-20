@@ -2,6 +2,8 @@ package com.project.ticket.infra.payment;
 
 import com.project.ticket.domain.payment.entity.Payment;
 import com.project.ticket.domain.payment.repository.PaymentRepository;
+import com.project.ticket.domain.seat.entity.Seat;
+import com.project.ticket.domain.user.entity.User;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,19 +16,19 @@ public class MockPaymentClient implements PaymentClient {
     }
 
     @Override
-    public PaymentResult pay(Long userId, Long seatId, int amount) {
+    public PaymentResult pay(User user, Seat seat, int amount) {
         if (failNextPayment) {
             failNextPayment = false;
-            Payment payment = paymentRepository.save(Payment.failed(userId, seatId, amount));
-            return PaymentResult.failure(payment.getId());
+            Payment payment = paymentRepository.save(Payment.failed(user, seat, amount));
+            return PaymentResult.failure(payment);
         }
-        Payment payment = paymentRepository.save(Payment.succeeded(userId, seatId, amount));
-        return PaymentResult.success(payment.getId());
+        Payment payment = paymentRepository.save(Payment.succeeded(user, seat, amount));
+        return PaymentResult.success(payment);
     }
 
     @Override
     public PaymentResult cancel(Long paymentId) {
-        return PaymentResult.success(paymentId);
+        return PaymentResult.successWithoutPayment();
     }
 
     public void failNextPayment() {

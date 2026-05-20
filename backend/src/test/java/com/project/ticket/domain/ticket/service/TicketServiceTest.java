@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.project.ticket.domain.concert.dto.ConcertCreateRequest;
 import com.project.ticket.domain.concert.service.ConcertService;
+import com.project.ticket.domain.payment.entity.PaymentStatus;
+import com.project.ticket.domain.payment.repository.PaymentRepository;
 import com.project.ticket.domain.seat.entity.SeatStatus;
 import com.project.ticket.domain.seat.repository.SeatRepository;
 import com.project.ticket.domain.ticket.dto.TicketPurchaseRequest;
@@ -38,6 +40,9 @@ class TicketServiceTest {
     SeatRepository seatRepository;
 
     @Autowired
+    PaymentRepository paymentRepository;
+
+    @Autowired
     MockPaymentClient mockPaymentClient;
 
     @Test
@@ -49,6 +54,11 @@ class TicketServiceTest {
 
         assertThat(response.status()).isEqualTo(TicketStatus.COMPLETED);
         assertThat(response.seatId()).isEqualTo(seatId);
+        assertThat(response.paymentId()).isPositive();
+        var payment = paymentRepository.findById(response.paymentId()).orElseThrow();
+        assertThat(payment.getStatus()).isEqualTo(PaymentStatus.SUCCEEDED);
+        assertThat(payment.getUser().getId()).isEqualTo(fanId);
+        assertThat(payment.getSeat().getId()).isEqualTo(seatId);
         assertThat(seatRepository.findById(seatId).orElseThrow().getStatus()).isEqualTo(SeatStatus.SOLD);
     }
 

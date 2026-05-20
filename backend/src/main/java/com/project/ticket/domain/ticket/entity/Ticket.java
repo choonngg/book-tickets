@@ -1,5 +1,6 @@
 package com.project.ticket.domain.ticket.entity;
 
+import com.project.ticket.domain.payment.entity.Payment;
 import com.project.ticket.domain.seat.entity.Seat;
 import com.project.ticket.domain.user.entity.User;
 import jakarta.persistence.Column;
@@ -38,8 +39,9 @@ public class Ticket {
     @JoinColumn(name = "seat_id", nullable = false)
     private Seat seat;
 
-    @Column(nullable = false)
-    private Long paymentId;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "payment_id", nullable = false)
+    private Payment payment;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -51,11 +53,11 @@ public class Ticket {
     protected Ticket() {
     }
 
-    public static Ticket complete(User user, Seat seat, Long paymentId) {
+    public static Ticket complete(User user, Seat seat, Payment payment) {
         Ticket ticket = new Ticket();
         ticket.user = user;
         ticket.seat = seat;
-        ticket.paymentId = paymentId;
+        ticket.payment = payment;
         ticket.status = TicketStatus.COMPLETED;
         ticket.createdAt = LocalDateTime.now();
         return ticket;
