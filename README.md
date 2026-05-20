@@ -9,6 +9,7 @@
 단순 CRUD를 넘어, 좌석 예매에서 발생하는 동시성 문제를 다루고 Optimistic Lock, Pessimistic Lock, Redisson 기반 Distributed Lock 전략을 비교했습니다.  
 최종적으로 AWS 환경에서 ALB, EC2 Docker Compose, RDS MySQL, ElastiCache Valkey를 사용해 배포까지 검증했습니다.
 
+<br>
 ## ✨ 주요 기능
 
 | 구분 | 내용 |
@@ -20,7 +21,7 @@
 | 동시성 제어 | 동일 좌석 중복 예매 방지, 예매 전략별 부하 테스트 |
 | 배포 | GitHub Actions, GHCR, Docker Compose, AWS 기반 배포 |
 
-
+<br>
 ## 🛠️ 기술 스택
 
 | 영역 | 기술 |
@@ -35,14 +36,12 @@
 | CI/CD | GitHub Actions, GHCR |
 | Test | JUnit 5, Mockito, Spring MVC Test, Vitest |
 
-
+<br>
 ## 🏗️ 아키텍처
 
 <img width="1119" height="776" alt="Architecture Diagram" src="https://github.com/user-attachments/assets/5e2d8c87-9069-437a-bb90-99fef44f2ab5" />
 
-운영 트래픽은 ALB를 통해 EC2의 Nginx 컨테이너로 들어옵니다.  
-Nginx는 React 정적 파일을 서빙하고, `/api/**` 및 `/actuator/health` 요청을 Spring Boot 백엔드로 프록시합니다.
-
+<br>
 ## 🧭 핵심 사용자 흐름
 
 ### Artist
@@ -59,7 +58,7 @@ Nginx는 React 정적 파일을 서빙하고, `/api/**` 및 `/actuator/health` �
 ### Admin
 현재 ADMIN 역할은 로그인 가능하지만, 별도 관리 기능은 준비 중 화면으로 처리합니다. 프로젝트 범위를 예매 핵심 흐름에 집중하기 위한 결정입니다.
 
-  
+<br>
 ## 🔌 API 개요
 
 | 도메인 | 엔드포인트 |
@@ -72,7 +71,7 @@ Nginx는 React 정적 파일을 서빙하고, `/api/**` 및 `/actuator/health` �
 
 `POST /api/tickets` 요청에는 중복 결제를 막기 위해 `Idempotency-Key` 헤더가 필요합니다.
 
-  
+<br>
 ## 🔒 예매 전략
 예매 로직은 `TICKET_PURCHASE_STRATEGY` 설정값으로 전략을 선택합니다.
 
@@ -88,7 +87,7 @@ AWS 배포 환경에서는 다음 전략을 사용했습니다.
 TICKET_PURCHASE_STRATEGY=distributed
 ```
 
-
+<br>
 ## 💻 로컬 실행
 
 ### 요구 사항
@@ -132,7 +131,8 @@ cd frontend
 npm ci
 npm run dev
 ```
-  
+
+<br>
 ## ✅ 테스트
 
 ### Backend
@@ -163,7 +163,7 @@ npm run build
 docker compose -f docker-compose.prod.yml config
 ```
 
-  
+<br>
 ## 🚀 배포
 
 검증한 배포 구조는 다음과 같습니다.
@@ -211,7 +211,7 @@ ghcr.io/choonngg/book-tickets-nginx:<commit-sha>
 | `TICKET_PURCHASE_STRATEGY` | AWS 배포 환경에서는 `distributed` |
 | `PAYMENT_TIMEOUT_MILLIS` | Mock 결제 timeout |
 
-  
+<br>
 ## 🧯 배포 중 해결한 문제
 
 | 문제 | 해결 |
@@ -223,7 +223,7 @@ ghcr.io/choonngg/book-tickets-nginx:<commit-sha>
 | 브라우저에서 ALB `503` 응답 | ALB 가용 영역 및 Target Group 설정을 EC2 subnet/AZ와 맞춤 |
 | README만 수정해도 Deploy 실행 | Deploy workflow에 path filter를 적용해 문서 변경 배포 제외 |
 
-  
+<br>
 ## 📁 프로젝트 구조
 
 ```text
@@ -238,7 +238,7 @@ ghcr.io/choonngg/book-tickets-nginx:<commit-sha>
 └── .env.example
 ```
 
-  
+<br>
 ## 📌 현재 상태
 
 | 항목 | 상태 |
