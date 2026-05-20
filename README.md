@@ -38,16 +38,7 @@
 
 ## 🏗️ 아키텍처
 
-```mermaid
-flowchart LR
-    User["사용자 브라우저"] --> ALB["AWS ALB :80"]
-    ALB --> EC2["EC2"]
-    EC2 --> Nginx["Nginx Container :80"]
-    Nginx --> Frontend["React Static Assets"]
-    Nginx --> Backend["Spring Boot Container :8080"]
-    Backend --> RDS["RDS MySQL :3306"]
-    Backend --> Valkey["ElastiCache Valkey :6379"]
-```
+<img width="1071" height="741" alt="Architecture Diagram" src="https://github.com/user-attachments/assets/db5326b3-a40f-4dab-8a60-50451ff7c988" />
 
 운영 트래픽은 ALB를 통해 EC2의 Nginx 컨테이너로 들어옵니다.  
 Nginx는 React 정적 파일을 서빙하고, `/api/**` 및 `/actuator/health` 요청을 Spring Boot 백엔드로 프록시합니다.
