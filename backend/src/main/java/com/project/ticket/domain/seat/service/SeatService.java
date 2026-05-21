@@ -5,6 +5,7 @@ import com.project.ticket.domain.seat.dto.SeatAvailabilitySummaryResponse;
 import com.project.ticket.domain.seat.dto.SeatResponse;
 import com.project.ticket.domain.seat.dto.SeatSectionAvailabilityResponse;
 import com.project.ticket.domain.seat.dto.SeatSectionSeatResponse;
+import com.project.ticket.domain.seat.dto.SeatSectionSummaryResponse;
 import com.project.ticket.domain.seat.entity.SeatStatus;
 import com.project.ticket.domain.seat.repository.SeatRepository;
 import com.project.ticket.global.exception.BusinessException;
@@ -42,8 +43,10 @@ public class SeatService {
     @Transactional(readOnly = true)
     public SeatAvailabilitySummaryResponse findAvailabilitySummary(Long concertId) {
         verifyConcertExists(concertId);
-        long totalAvailable = seatRepository.countByConcertIdAndStatus(concertId, SeatStatus.AVAILABLE);
         var sections = seatRepository.countAvailableSeatsBySection(concertId, SeatStatus.AVAILABLE);
+        long totalAvailable = sections.stream()
+                .mapToLong(SeatSectionSummaryResponse::availableCount)
+                .sum();
         return new SeatAvailabilitySummaryResponse(totalAvailable, sections);
     }
 

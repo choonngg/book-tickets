@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.project.ticket.domain.concert.dto.ConcertCreateRequest;
 import com.project.ticket.domain.concert.service.ConcertService;
+import com.project.ticket.domain.seat.dto.SeatSectionSummaryResponse;
 import com.project.ticket.domain.seat.entity.SeatStatus;
 import com.project.ticket.domain.seat.repository.SeatRepository;
 import com.project.ticket.domain.user.entity.User;
@@ -66,8 +67,12 @@ class SeatServiceTest {
         seats.getFirst().hold();
 
         var response = seatService.findAvailabilitySummary(concertId);
+        long summedAvailable = response.sections().stream()
+                .mapToLong(SeatSectionSummaryResponse::availableCount)
+                .sum();
 
         assertThat(response.totalAvailable()).isEqualTo(14_999);
+        assertThat(response.totalAvailable()).isEqualTo(summedAvailable);
         assertThat(response.sections()).hasSize(10);
         assertThat(response.sections())
                 .extracting("section", "availableCount")

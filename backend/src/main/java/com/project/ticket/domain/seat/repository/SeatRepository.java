@@ -28,8 +28,6 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
             @Param("status") SeatStatus status
     );
 
-    long countByConcertIdAndStatus(Long concertId, SeatStatus status);
-
     long countByConcertIdAndSectionAndStatus(Long concertId, String section, SeatStatus status);
 
     List<Seat> findByConcertIdAndSectionAndStatusOrderByRowAscColAsc(
